@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deals & Offers | TechStore</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <style>
+    .deal-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .deal-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .countdown-timer {
+      font-family: monospace;
+      letter-spacing: 2px;
+    }
+    
+    .progress-bar {
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%);
+      transition: width 0.3s ease;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    .pulse-hot {
+      animation: pulse 2s infinite;
+    }
+    
+    .discount-badge {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%);
+    }
+  </style>
+</head>
+
+<body class="font-sans antialiased bg-gray-50">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100">
+    <div class="mx-auto flex h-20 max-w-7xl items-center gap-8 px-4 sm:px-6 lg:px-8">
+      <a href="index.html" class="group flex items-center gap-3">
+        <div class="relative">
+          <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-teal-400 to-cyan-400 opacity-20 blur group-hover:opacity-30 transition-opacity"></div>
+          <div class="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-teal-600 to-cyan-500">
+            <i class="bi bi-cpu-fill text-white text-xl"></i>
+          </div>
+        </div>
+        <div>
+          <span class="text-2xl font-bold tracking-tight text-gray-900">TechStore</span>
+          <div class="text-xs font-medium text-teal-600">Premium Technology</div>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex flex-1 items-center justify-center">
+        <ul class="flex items-center gap-8 text-sm font-medium">
+          <li><a href="index.html" class="text-gray-700 hover:text-teal-600 transition-colors">Home</a></li>
+          <li><a href="product.html" class="text-gray-700 hover:text-teal-600 transition-colors">Products</a></li>
+          <li><a href="categories.html" class="text-gray-700 hover:text-teal-600 transition-colors">Categories</a></li>
+          <li><a href="deals.html" class="text-teal-600 font-semibold">Deals</a></li>
+          <li><a href="wishlist.html" class="text-gray-700 hover:text-teal-600 transition-colors">Wishlist</a></li>
+        </ul>
+      </nav>
+
+      <div class="flex flex-1 items-center justify-end">
+        <div class="flex items-center gap-4">
+          <div class="hidden sm:block relative">
+            <input type="text" placeholder="Search deals..." class="w-64 rounded-full border border-gray-300 bg-gray-50 pl-10 pr-4 py-2.5 text-sm placeholder-gray-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 focus:outline-none">
+            <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          </div>
+          
+          <div class="hidden sm:flex items-center gap-3">
+            <a href="wishlist.html" class="relative rounded-full p-2 text-gray-600 hover:bg-gray-100 hover:text-teal-600 transition-colors">
+              <i class="bi bi-heart text-lg"></i>
+              <span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-pink-500 text-xs font-medium text-white">3</span>
+            </a>
+            
+            <a href="cart.html" class="relative rounded-full p-2 text-gray-600 hover:bg-gray-100 hover:text-teal-600 transition-colors">
+              <i class="bi bi-cart3 text-lg"></i>
+              <span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-teal-500 text-xs font-medium text-white">5</span>
+            </a>
+          </div>
+          
+          <div class="hidden sm:flex items-center gap-2">
+            <a href="account.html" class="flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+              <div class="h-8 w-8 rounded-full bg-gradient-to-r from-teal-400 to-cyan-400"></div>
+              Account
+            </a>
+          </div>
+          
+          <button class="rounded-lg border border-gray-300 p-2.5 text-gray-600 hover:bg-gray-50 lg:hidden">
+            <i class="bi bi-list text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="min-h-screen">
+    <!-- Hero Banner -->
+    <div class="relative overflow-hidden bg-gradient-to-r from-red-500 via-orange-500 to-red-600">
+      <div class="absolute inset-0">
+        <div class="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+      </div>
+      
+      <div class="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <div class="text-center lg:text-left">
+            <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
+              <i class="bi bi-lightning-charge-fill text-white"></i>
+              <span class="text-white font-medium">FLASH SALE ACTIVE</span>
+            </div>
+            <h1 class="text-4xl font-bold text-white sm:text-5xl md:text-6xl">
+              Mega Deals Week
+            </h1>
+            <p class="mt-6 text-xl text-white/90 max-w-2xl">
+              Up to 70% off on premium tech products. Limited time offers with exclusive discounts.
+            </p>
+            
+            <!-- Countdown Timer -->
+            <div class="mt-8 bg-white/10 backdrop-blur-sm rounded-2xl p-6 inline-block">
+              <p class="text-white/80 text-sm mb-3">Sale ends in:</p>
+              <div class="countdown-timer flex items-center gap-3 text-white">
+                <div class="text-center">
+                  <div class="text-3xl font-bold bg-white/20 rounded-lg px-3 py-2">02</div>
+                  <div class="text-xs mt-1">Days</div>
+                </div>
+                <div class="text-2xl">:</div>
+                <div class="text-center">
+                  <div class="text-3xl font-bold bg-white/20 rounded-lg px-3 py-2">18</div>
+                  <div class="text-xs mt-1">Hours</div>
+                </div>
+                <div class="text-2xl">:</div>
+                <div class="text-center">
+                  <div class="text-3xl font-bold bg-white/20 rounded-lg px-3 py-2">45</div>
+                  <div class="text-xs mt-1">Minutes</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="relative">
+            <div class="relative rounded-3xl bg-gradient-to-br from-white/10 to-white/5 p-2 backdrop-blur-xl">
+              <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80"
+                   alt="Deals Banner"
+                   class="w-full h-64 md:h-80 object-cover rounded-2xl">
+              <div class="absolute -top-4 -right-4">
+                <div class="discount-badge w-24 h-24 flex items-center justify-center">
+                  <div class="text-center text-white">
+                    <div class="text-2xl font-bold">70%</div>
+                    <div class="text-xs">OFF</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <!-- Deal Categories -->
+      <div class="mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6">Shop by Deal Type</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <a href="#flash-sales" class="group bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center hover:border-red-200 transition-colors">
+            <div class="mb-4 inline-flex rounded-2xl bg-gradient-to-r from-red-500 to-red-400 p-4">
+              <i class="bi bi-lightning-charge-fill text-2xl text-white"></i>
+            </div>
+            <h3 class="font-bold text-gray-900 mb-2">Flash Sales</h3>
+            <p class="text-sm text-gray-600">Limited time offers</p>
+          </a>
+          
+          <a href="#clearance" class="group bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center hover:border-orange-200 transition-colors">
+            <div class="mb-4 inline-flex rounded-2xl bg-gradient-to-r from-orange-500 to-orange-400 p-4">
+              <i class="bi bi-tag-fill text-2xl text-white"></i>
+            </div>
+            <h3 class="font-bold text-gray-900 mb-2">Clearance</h3>
+            <p class="text-sm text-gray-600">Last chance deals</p>
+          </a>
+          
+          <a href="#bundles" class="group bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center hover:border-blue-200 transition-colors">
+            <div class="mb-4 inline-flex rounded-2xl bg-gradient-to-r from-blue-500 to-blue-400 p-4">
+              <i class="bi bi-box-seam text-2xl text-white"></i>
+            </div>
+            <h3 class="font-bold text-gray-900 mb-2">Bundles</h3>
+            <p class="text-sm text-gray-600">Save on combos</p>
+          </a>
+          
+          <a href="#refurbished" class="group bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center hover:border-green-200 transition-colors">
+            <div class="mb-4 inline-flex rounded-2xl bg-gradient-to-r from-green-500 to-green-400 p-4">
+              <i class="bi bi-arrow-repeat text-2xl text-white"></i>
+            </div>
+            <h3 class="font-bold text-gray-900 mb-2">Refurbished</h3>
+            <p class="text-sm text-gray-600">Certified pre-owned</p>
+          </a>
+        </div>
+      </div>
+
+      <!-- Flash Sales Section -->
+      <div id="flash-sales" class="mb-16">
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <div class="flex items-center gap-3">
+              <h2 class="text-3xl font-bold text-gray-900">Flash Sales</h2>
+              <span class="pulse-hot px-3 py-1 bg-red-500 text-white text-sm font-medium rounded-full">HOT</span>
+            </div>
+            <p class="text-gray-600 mt-2">Limited quantity, act fast!</p>
+          </div>
+          <a href="product.html?deal=flash" class="hidden sm:inline-flex items-center gap-2 text-red-600 font-medium hover:text-red-700">
+            View All Flash Deals <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Flash Deal 1 -->
+          <div class="deal-card group relative bg-white rounded-2xl shadow-sm border-2 border-red-200 overflow-hidden">
+            <div class="absolute top-4 left-4 z-10">
+              <span class="px-3 py-1 bg-red-500 text-white text-sm font-bold rounded-full">FLASH</span>
+            </div>
+            <div class="p-6">
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <span class="text-xs font-medium text-red-600">SMART WATCH</span>
+                  <h3 class="font-bold text-gray-900 text-lg mt-1">Apple Watch Series 9</h3>
+                </div>
+                <button class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200">
+                  <i class="bi bi-heart text-gray-600"></i>
+                </button>
+              </div>
+              
+              <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=400&q=80" 
+                   alt="Apple Watch"
+                   class="w-full h-48 object-contain mb-6">
+              
+              <!-- Stock Progress -->
+              <div class="mb-4">
+                <div class="flex justify-between text-sm text-gray-600 mb-2">
+                  <span>Sold: 78%</span>
+                  <span>Only 12 left</span>
+                </div>
+                <div class="progress-bar bg-gray-200">
+                  <div class="progress-fill" style="width: 78%"></div>
+                </div>
+              </div>
+              
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-2xl font-bold text-gray-900">$399</span>
+                  <span class="text-gray-500 line-through ml-2">$499</span>
+                  <div class="text-sm text-red-600 font-medium mt-1">Save $100</div>
+                </div>
+                <button class="add-to-cart px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors">
+                  Buy Now
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Flash Deal 2 -->
+          <div class="deal-card group relative bg-white rounded-2xl shadow-sm border-2 border-orange-200 overflow-hidden">
+            <div class="absolute top-4 left-4 z-10">
+              <span class="px-3 py-1 bg-orange-500 text-white text-sm font-bold rounded-full">-60%</span>
+            </div>
+            <div class="p-6">
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <span class="text-xs font-medium text-orange-600">AUDIO</span>
+                  <h3 class="font-bold text-gray-900 text-lg mt-1">AirPods Pro (2nd Gen)</h3>
+                </div>
+                <button class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200">
+                  <i class="bi bi-heart text-gray-600"></i>
+                </button>
+              </div>
+              
+              <img src="https://i.pinimg.com/1200x/52/ce/99/52ce99b8df2adf77f55ff42f18adc069.jpg" 
+                   alt="AirPods Pro"
+                   class="w-full h-48 object-contain mb-6">
+              
+              <div class="mb-4 flex items-center gap-2 text-sm text-gray-600">
+                <i class="bi bi-clock"></i>
+                <span>Ends in: 4:32:15</span>
+              </div>
+              
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-2xl font-bold text-gray-900">$249</span>
+                  <span class="text-gray-500 line-through ml-2">$299</span>
+                  <div class="text-sm text-orange-600 font-medium mt-1">60% OFF</div>
+                </div>
+                <button class="add-to-cart px-6 py-3 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700 transition-colors">
+                  Buy Now
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Flash Deal 3 -->
+          <div class="deal-card group relative bg-white rounded-2xl shadow-sm border-2 border-purple-200 overflow-hidden">
+            <div class="absolute top-4 left-4 z-10">
+              <span class="px-3 py-1 bg-purple-500 text-white text-sm font-bold rounded-full">DEAL</span>
+            </div>
+            <div class="p-6">
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <span class="text-xs font-medium text-purple-600">GAMING</span>
+                  <h3 class="font-bold text-gray-900 text-lg mt-1">PlayStation 5 Digital</h3>
+                </div>
+                <button class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200">
+                  <i class="bi bi-heart text-gray-600"></i>
+                </button>
+              </div>
+              
+              <img src="https://images.unsplash.com/photo-1600003263720-95b45a4035d5?auto=format&fit=crop&w=400&q=80" 
+                   alt="PS5"
+                   class="w-full h-48 object-contain mb-6">
+              
+              <!-- Stock Progress -->
+              <div class="mb-4">
+                <div class="flex justify-between text-sm text-gray-600 mb-2">
+                  <span>Sold: 92%</span>
+                  <span>Only 3 left</span>
+                </div>
+                <div class="progress-bar bg-gray-200">
+                  <div class="progress-fill" style="width: 92%"></div>
+                </div>
+              </div>
+              
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-2xl font-bold text-gray-900">$449</span>
+                  <span class="text-gray-500 line-through ml-2">$499</span>
+                  <div class="text-sm text-purple-600 font-medium mt-1">Save $50</div>
+                </div>
+                <button class="add-to-cart px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors">
+                  Buy Now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bundle Deals -->
+      <div id="bundles" class="mb-16">
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h2 class="text-3xl font-bold text-gray-900">Bundle Deals</h2>
+            <p class="text-gray-600 mt-2">Save more when you buy together</p>
+          </div>
+          <a href="product.html?deal=bundle" class="hidden sm:inline-flex items-center gap-2 text-blue-600 font-medium hover:text-blue-700">
+            View All Bundles <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+        
+        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-3xl p-8">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+              <div class="inline-flex items-center gap-2 bg-white rounded-full px-4 py-2 mb-6">
+                <i class="bi bi-stars text-blue-600"></i>
+                <span class="text-blue-600 font-medium">RECOMMENDED BUNDLE</span>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">Apple Productivity Bundle</h3>
+              <p class="text-gray-600 mb-6">
+                Get everything you need for work and creativity in one package. Perfect for professionals and students.
+              </p>
+              
+              <ul class="space-y-3 mb-8">
+                <li class="flex items-center gap-3">
+                  <i class="bi bi-check-circle text-green-500"></i>
+                  <span>MacBook Pro 14" M3 Pro</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <i class="bi bi-check-circle text-green-500"></i>
+                  <span>iPad Air 11" M2</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <i class="bi bi-check-circle text-green-500"></i>
+                  <span>AirPods Pro (2nd Gen)</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <i class="bi bi-check-circle text-green-500"></i>
+                  <span>Apple Pencil (2nd Gen)</span>
+                </li>
+              </ul>
+              
+              <div class="flex items-center gap-6">
+                <div>
+                  <div class="text-4xl font-bold text-gray-900">$3,499</div>
+                  <div class="text-gray-500 line-through">$4,247</div>
+                </div>
+                <button class="px-8 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-medium rounded-lg hover:shadow-lg transition-shadow">
+                  Buy Bundle
+                </button>
+              </div>
+            </div>
+            
+            <div class="relative">
+              <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white rounded-2xl p-4 flex flex-col items-center justify-center">
+                  <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=300&q=80" 
+                       alt="MacBook"
+                       class="w-full h-32 object-contain">
+                  <span class="text-sm font-medium text-gray-900 mt-2">MacBook Pro</span>
+                </div>
+                <div class="bg-white rounded-2xl p-4 flex flex-col items-center justify-center">
+                  <img src="https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&w=300&q=80" 
+                       alt="iPad"
+                       class="w-full h-32 object-contain">
+                  <span class="text-sm font-medium text-gray-900 mt-2">iPad Air</span>
+                </div>
+                <div class="bg-white rounded-2xl p-4 flex flex-col items-center justify-center">
+                  <img src="https://images.unsplash.com/photo-1546054451-aa2645c3d8e7?auto=format&fit=crop&w=300&q=80" 
+                       alt="AirPods"
+                       class="w-full h-32 object-contain">
+                  <span class="text-sm font-medium text-gray-900 mt-2">AirPods Pro</span>
+                </div>
+                <div class="bg-white rounded-2xl p-4 flex flex-col items-center justify-center">
+                  <div class="w-full h-32 flex items-center justify-center">
+                    <i class="bi bi-plus-circle text-4xl text-gray-400"></i>
+                  </div>
+                  <span class="text-sm font-medium text-gray-900 mt-2">More Items</span>
+                </div>
+              </div>
+              
+              <div class="absolute -top-4 -right-4">
+                <div class="w-20 h-20 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center">
+                  <div class="text-center text-white">
+                    <div class="text-xl font-bold">Save</div>
+                    <div class="text-2xl font-bold">$748</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Clearance Section -->
+      <div id="clearance" class="mb-16">
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h2 class="text-3xl font-bold text-gray-900">Clearance Deals</h2>
+            <p class="text-gray-600 mt-2">Last chance to buy at amazing prices</p>
+          </div>
+          <a href="product.html?deal=clearance" class="hidden sm:inline-flex items-center gap-2 text-orange-600 font-medium hover:text-orange-700">
+            View All Clearance <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Clearance Deal 1 -->
+          <div class="deal-card bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="p-6">
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <span class="text-xs font-medium text-orange-600">LAPTOP</span>
+                  <h3 class="font-bold text-gray-900 text-lg mt-1">MacBook Air M1</h3>
+                  <p class="text-sm text-gray-600">Previous generation model</p>
+                </div>
+                <span class="px-3 py-1 bg-orange-100 text-orange-800 text-sm font-bold rounded-full">-40%</span>
+              </div>
+              
+              <img src="https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=400&q=80" 
+                   alt="MacBook Air"
+                   class="w-full h-40 object-contain mb-6">
+              
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-2xl font-bold text-gray-900">$899</span>
+                  <span class="text-gray-500 line-through ml-2">$1,499</span>
+                </div>
+                <button class="add-to-cart px-6 py-3 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700">
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Clearance Deal 2 -->
+          <div class="deal-card bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="p-6">
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <span class="text-xs font-medium text-orange-600">PHONE</span>
+                  <h3 class="font-bold text-gray-900 text-lg mt-1">iPhone 13 Pro</h3>
+                  <p class="text-sm text-gray-600">Excellent condition</p>
+                </div>
+                <span class="px-3 py-1 bg-orange-100 text-orange-800 text-sm font-bold rounded-full">-35%</span>
+              </div>
+              
+              <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=400&q=80" 
+                   alt="iPhone 13"
+                   class="w-full h-40 object-contain mb-6">
+              
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-2xl font-bold text-gray-900">$699</span>
+                  <span class="text-gray-500 line-through ml-2">$1,079</span>
+                </div>
+                <button class="add-to-cart px-6 py-3 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700">
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Clearance Deal 3 -->
+          <div class="deal-card bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="p-6">
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <span class="text-xs font-medium text-orange-600">TABLET</span>
+                  <h3 class="font-bold text-gray-900 text-lg mt-1">iPad 9th Gen</h3>
+                  <p class="text-sm text-gray-600">Limited stock available</p>
+                </div>
+                <span class="px-3 py-1 bg-orange-100 text-orange-800 text-sm font-bold rounded-full">-30%</span>
+              </div>
+              
+              <img src="https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=400&q=80" 
+                   alt="iPad 9th Gen"
+                   class="w-full h-40 object-contain mb-6">
+              
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-2xl font-bold text-gray-900">$329</span>
+                  <span class="text-gray-500 line-through ml-2">$469</span>
+                </div>
+                <button class="add-to-cart px-6 py-3 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700">
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="bg-gradient-to-r from-teal-600 to-cyan-500 rounded-3xl p-8 md:p-12 text-center">
+        <h2 class="text-3xl font-bold text-white mb-4">Never Miss a Deal!</h2>
+        <p class="text-teal-100 mb-8 max-w-2xl mx-auto">
+          Subscribe to our newsletter and be the first to know about exclusive offers, flash sales, and new arrivals.
+        </p>
+        <form class="max-w-md mx-auto">
+          <div class="flex flex-col sm:flex-row gap-4">
+            <input type="email" 
+                   placeholder="Enter your email"
+                   class="flex-1 rounded-xl border border-white/20 bg-white/10 px-6 py-3 text-white placeholder-teal-200 focus:border-white focus:outline-none">
+            <button type="submit" class="px-8 py-3 bg-white text-teal-600 font-medium rounded-xl hover:bg-gray-100 transition-colors">
+              Subscribe
+            </button>
+          </div>
+          <p class="text-sm text-teal-100 mt-4">
+            By subscribing, you agree to receive promotional emails.
+          </p>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white">
+    <div class="mx-auto max-w-7xl px-4 pt-16 pb-8 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+        <!-- Brand Column -->
+        <div class="space-y-6">
+          <a href="index.html" class="inline-flex items-center gap-3">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-teal-600 to-cyan-500">
+              <i class="bi bi-cpu-fill text-white text-xl"></i>
+            </div>
+            <div>
+              <span class="text-2xl font-bold">TechStore</span>
+              <div class="text-xs font-medium text-teal-400">Premium Technology</div>
+            </div>
+          </a>
+          <p class="text-gray-400 text-sm leading-relaxed">
+            Your destination for premium technology products. We're committed to bringing you the latest innovations with exceptional service.
+          </p>
+          <div class="flex gap-4">
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="bi bi-facebook text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="bi bi-twitter-x text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="bi bi-instagram text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="bi bi-youtube text-xl"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+          <h3 class="text-lg font-semibold mb-6">Shop</h3>
+          <ul class="space-y-3">
+            <li><a href="product.html" class="text-gray-400 hover:text-white transition-colors text-sm">All Products</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">New Arrivals</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Best Sellers</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Special Offers</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Gift Cards</a></li>
+          </ul>
+        </div>
+        
+        <!-- Support -->
+        <div>
+          <h3 class="text-lg font-semibold mb-6">Support</h3>
+          <ul class="space-y-3">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Contact Us</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">FAQ</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Shipping Policy</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Returns & Refunds</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Warranty</a></li>
+          </ul>
+        </div>
+        
+        <!-- Company -->
+        <div>
+          <h3 class="text-lg font-semibold mb-6">Company</h3>
+          <ul class="space-y-3">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">About Us</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Careers</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Press</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Blog</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Store Locations</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="mt-16 border-t border-gray-800 pt-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <p class="text-gray-400 text-sm">
+            © 2024 TechStore. All rights reserved.
+          </p>
+          <div class="flex flex-wrap gap-4 text-sm text-gray-400">
+            <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+            <span class="text-gray-600">•</span>
+            <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+            <span class="text-gray-600">•</span>
+            <a href="#" class="hover:text-white transition-colors">Cookie Policy</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Countdown Timer
+    function updateCountdown() {
+      const days = document.querySelector('.countdown-timer div:nth-child(1) div');
+      const hours = document.querySelector('.countdown-timer div:nth-child(3) div');
+      const minutes = document.querySelector('.countdown-timer div:nth-child(5) div');
+      
+      // Simulate countdown
+      let d = parseInt(days.textContent);
+      let h = parseInt(hours.textContent);
+      let m = parseInt(minutes.textContent);
+      
+      if (m > 0) {
+        m--;
+      } else {
+        m = 59;
+        if (h > 0) {
+          h--;
+        } else {
+          h = 23;
+          if (d > 0) {
+            d--;
+          }
+        }
+      }
+      
+      days.textContent = d.toString().padStart(2, '0');
+      hours.textContent = h.toString().padStart(2, '0');
+      minutes.textContent = m.toString().padStart(2, '0');
+    }
+    
+    // Update countdown every minute
+    setInterval(updateCountdown, 60000);
+    
+    // Add to cart functionality
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const originalText = this.textContent;
+        this.innerHTML = '<i class="bi bi-check2 mr-2"></i>Added';
+        this.classList.add('from-green-500', 'to-green-600');
+        
+        setTimeout(() => {
+          this.innerHTML = originalText;
+          this.classList.remove('from-green-500', 'to-green-600');
+        }, 2000);
+        
+        showNotification('Added to cart!');
+      });
+    });
+    
+    // Show notification
+    function showNotification(message) {
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-24 right-8 z-50 rounded-xl bg-gradient-to-r from-teal-600 to-cyan-500 px-6 py-4 text-white shadow-2xl transform translate-x-full opacity-0 transition-all duration-300';
+      notification.innerHTML = `
+        <div class="flex items-center gap-3">
+          <i class="bi bi-check-circle text-xl"></i>
+          <div class="font-semibold">${message}</div>
+        </div>
+      `;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.classList.remove('translate-x-full', 'opacity-0');
+        notification.classList.add('translate-x-0', 'opacity-100');
+      }, 10);
+      
+      setTimeout(() => {
+        notification.classList.remove('translate-x-0', 'opacity-100');
+        notification.classList.add('translate-x-full', 'opacity-0');
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+    
+    // Smooth scroll to sections
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        if (targetId !== '#') {
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            window.scrollTo({
+              top: targetElement.offsetTop - 100,
+              behavior: 'smooth'
+            });
+          }
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

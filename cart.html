@@ -1,0 +1,1004 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shopping Cart | TechStore</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <style>
+    /* Custom Cart Styles */
+    .cart-item {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .cart-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Quantity Controls */
+    .quantity-btn {
+      transition: all 0.2s ease;
+    }
+    .quantity-btn:hover {
+      transform: scale(1.1);
+    }
+    
+    /* Progress Bar */
+    .progress-bar {
+      height: 6px;
+      background: linear-gradient(to right, #0d9488, #0891b2);
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+    
+    /* Empty State */
+    .empty-cart {
+      animation: fadeIn 0.8s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Slide Animation */
+    .slide-enter {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    .slide-enter-active {
+      transform: translateX(0);
+      opacity: 1;
+      transition: all 0.3s ease;
+    }
+    .slide-exit {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    .slide-exit-active {
+      transform: translateX(100%);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    
+    /* Custom Scrollbar for Cart Items */
+    .cart-items-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: #0d9488 #f1f1f1;
+    }
+    .cart-items-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .cart-items-scroll::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+    .cart-items-scroll::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, #0d9488, #0891b2);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 font-sans">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100">
+    <div class="mx-auto flex h-20 max-w-7xl items-center gap-8 px-4 sm:px-6 lg:px-8">
+      <!-- Logo -->
+      <a href="index.html" class="group flex items-center gap-3">
+        <div class="relative">
+          <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-teal-400 to-cyan-400 opacity-20 blur group-hover:opacity-30 transition-opacity"></div>
+          <div class="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-teal-600 to-cyan-500">
+            <i class="bi bi-cpu-fill text-white text-xl"></i>
+          </div>
+        </div>
+        <div>
+          <span class="text-2xl font-bold tracking-tight text-gray-900">TechStore</span>
+          <div class="text-xs font-medium text-teal-600">Premium Technology</div>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden lg:flex flex-1 items-center justify-center">
+        <ul class="flex items-center gap-8 text-sm font-medium">
+          <li>
+            <a href="index.html" class="text-gray-700 hover:text-teal-600 transition-colors">Home</a>
+          </li>
+          <li>
+            <a href="product.html" class="text-gray-700 hover:text-teal-600 transition-colors">Products</a>
+          </li>
+          <li>
+            <a href="categories.html" class="text-gray-700 hover:text-teal-600 transition-colors">Categories</a>
+          </li>
+          <li>
+            <a href="deals.html" class="text-gray-700 hover:text-teal-600 transition-colors">Deals</a>
+          </li>
+          <li>
+            <a href="" class="text-gray-700 hover:text-teal-600 transition-colors">Support</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Cart Status -->
+      <div class="flex flex-1 items-center justify-end lg:flex-none">
+        <div class="flex items-center gap-4">
+          <a href="index.html" class="hidden sm:flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+            <i class="bi bi-arrow-left"></i>
+            Continue Shopping
+          </a>
+          
+          <!-- Cart Indicator -->
+          <div class="relative">
+            <div class="flex items-center gap-2">
+              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-teal-500 to-cyan-400">
+                <i class="bi bi-cart3 text-white"></i>
+              </div>
+              <div>
+                <div class="text-sm font-medium text-gray-900">Shopping Cart</div>
+                <div class="text-xs text-gray-600"><span id="cart-item-count">5</span> items</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Free Shipping Progress -->
+  <div class="bg-gradient-to-r from-teal-50 to-cyan-50 border-b border-teal-100">
+    <div class="mx-auto max-w-7xl px-4 py-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="flex h-6 w-6 items-center justify-center rounded-full bg-teal-100">
+            <i class="bi bi-truck text-teal-600 text-xs"></i>
+          </div>
+          <div class="text-sm font-medium text-teal-800">
+            Add <span class="font-bold">$50.01</span> more for <span class="font-bold">FREE shipping!</span>
+          </div>
+        </div>
+        <div class="w-32">
+          <div class="h-2 rounded-full bg-teal-200">
+            <div class="progress-bar h-2 rounded-full" style="width: 75%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Cart Content -->
+  <main class="min-h-screen">
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <!-- Breadcrumb -->
+      <nav class="mb-8" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2 text-sm text-gray-600">
+          <li><a href="index.html" class="hover:text-teal-600 transition-colors">Home</a></li>
+          <li><i class="bi bi-chevron-right text-gray-300"></i></li>
+          <li><a href="product.html" class="hover:text-teal-600 transition-colors">Products</a></li>
+          <li><i class="bi bi-chevron-right text-gray-300"></i></li>
+          <li class="font-medium text-gray-900">Shopping Cart</li>
+        </ol>
+      </nav>
+
+      <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Cart Items Section -->
+        <div class="lg:w-2/3">
+          <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-900">Your Shopping Cart</h1>
+            <p class="mt-2 text-gray-600">Review your items and proceed to checkout</p>
+          </div>
+
+          <!-- Cart Items Container -->
+          <div class="space-y-6">
+            <!-- Cart Item 1 -->
+            <div class="cart-item rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
+              <div class="flex flex-col sm:flex-row gap-6">
+                <!-- Product Image -->
+                <div class="flex-shrink-0">
+                  <div class="relative h-48 w-48 overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-white p-4">
+                    <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80" 
+                         alt="MacBook Pro 16" 
+                         class="h-full w-full object-contain transition-transform duration-500 hover:scale-105">
+                    <!-- Stock Badge -->
+                    <div class="absolute top-3 left-3">
+                      <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+                        In Stock
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Product Details -->
+                <div class="flex-1 min-w-0">
+                  <div class="flex flex-col h-full">
+                    <!-- Title & Price -->
+                    <div class="flex-1">
+                      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                        <div>
+                          <div class="mb-2">
+                            <span class="text-xs font-medium text-blue-600 uppercase tracking-wide">Laptop</span>
+                          </div>
+                          <h3 class="text-xl font-bold text-gray-900 hover:text-teal-600 transition-colors">
+                            <a href="#">Apple MacBook Pro 16" M3 Max</a>
+                          </h3>
+                          <p class="mt-2 text-gray-600">Space Black • 48GB RAM • 1TB SSD • 40-core GPU</p>
+                          
+                          <!-- Specifications -->
+                          <div class="mt-4 flex flex-wrap gap-3">
+                            <span class="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-700">Apple M3 Max</span>
+                            <span class="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-700">16-inch Display</span>
+                            <span class="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-700">48GB RAM</span>
+                            <span class="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-700">1TB SSD</span>
+                          </div>
+                        </div>
+                        
+                        <!-- Price -->
+                        <div class="flex flex-col items-end">
+                          <div class="text-3xl font-bold text-gray-900">$3,299.00</div>
+                          <div class="mt-2 text-sm text-gray-500">$3,299.00 each</div>
+                          <div class="mt-2 text-sm text-green-600 font-medium">
+                            <i class="bi bi-check-circle-fill mr-1"></i>
+                            Free Shipping
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-6 border-t border-gray-100">
+                      <!-- Quantity Controls -->
+                      <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-3">
+                          <button class="quantity-btn flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+                            <i class="bi bi-dash-lg text-gray-600"></i>
+                          </button>
+                          <div class="relative">
+                            <input type="text" 
+                                   value="1" 
+                                   class="h-10 w-20 rounded-lg border border-gray-300 bg-white text-center text-lg font-bold text-gray-900 focus:border-teal-500 focus:ring-2 focus:ring-teal-200">
+                            <div class="absolute -top-6 left-0 text-xs text-gray-500">Quantity</div>
+                          </div>
+                          <button class="quantity-btn flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+                            <i class="bi bi-plus-lg text-gray-600"></i>
+                          </button>
+                        </div>
+                        
+                        <!-- Save for Later -->
+                        <button class="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-teal-600 transition-colors">
+                          <i class="bi bi-bookmark"></i>
+                          Save for later
+                        </button>
+                      </div>
+                      
+                      <!-- Remove & Update -->
+                      <div class="flex items-center gap-4">
+                        <button class="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                          <i class="bi bi-arrow-clockwise"></i>
+                          Update
+                        </button>
+                        <button class="remove-item flex items-center gap-2 text-sm font-medium text-red-600 hover:text-red-700 transition-colors">
+                          <i class="bi bi-trash"></i>
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cart Item 2 -->
+            <div class="cart-item rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
+              <div class="flex flex-col sm:flex-row gap-6">
+                <div class="flex-shrink-0">
+                  <div class="relative h-48 w-48 overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-white p-4">
+                    <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=800&q=80" 
+                         alt="Apple Watch" 
+                         class="h-full w-full object-contain">
+                    <div class="absolute top-3 left-3">
+                      <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800">
+                        Limited Stock
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="flex-1 min-w-0">
+                  <div class="flex flex-col h-full">
+                    <div class="flex-1">
+                      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                        <div>
+                          <div class="mb-2">
+                            <span class="text-xs font-medium text-teal-600 uppercase tracking-wide">Smart Watch</span>
+                          </div>
+                          <h3 class="text-xl font-bold text-gray-900 hover:text-teal-600 transition-colors">
+                            <a href="#">Apple Watch Series 9 GPS</a>
+                          </h3>
+                          <p class="mt-2 text-gray-600">45mm Midnight Aluminum Case with Midnight Sport Band</p>
+                          
+                          <div class="mt-4 flex items-center gap-4">
+                            <!-- Color Selection -->
+                            <div class="flex items-center gap-2">
+                              <span class="text-sm text-gray-600">Color:</span>
+                              <div class="flex gap-2">
+                                <button class="h-6 w-6 rounded-full border-2 border-gray-300 bg-gray-800"></button>
+                                <button class="h-6 w-6 rounded-full border-2 border-gray-300 bg-gray-300"></button>
+                                <button class="h-6 w-6 rounded-full border-2 border-teal-500 bg-blue-800"></button>
+                              </div>
+                            </div>
+                            
+                            <!-- Size Selection -->
+                            <div class="flex items-center gap-2">
+                              <span class="text-sm text-gray-600">Size:</span>
+                              <select class="rounded-lg border border-gray-300 bg-white px-3 py-1 text-sm">
+                                <option>41mm</option>
+                                <option selected>45mm</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="flex flex-col items-end">
+                          <div class="text-3xl font-bold text-gray-900">$399.00</div>
+                          <div class="mt-2 flex items-center gap-2">
+                            <span class="text-lg text-gray-500 line-through">$499.00</span>
+                            <span class="rounded-full bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700">
+                              -20%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-6 border-t border-gray-100">
+                      <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-3">
+                          <button class="quantity-btn flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+                            <i class="bi bi-dash-lg text-gray-600"></i>
+                          </button>
+                          <input type="text" 
+                                 value="2" 
+                                 class="h-10 w-20 rounded-lg border border-gray-300 bg-white text-center text-lg font-bold text-gray-900 focus:border-teal-500 focus:ring-2 focus:ring-teal-200">
+                          <button class="quantity-btn flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+                            <i class="bi bi-plus-lg text-gray-600"></i>
+                          </button>
+                        </div>
+                        
+                        <button class="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-teal-600 transition-colors">
+                          <i class="bi bi-gift"></i>
+                          Add gift options
+                        </button>
+                      </div>
+                      
+                      <div class="flex items-center gap-4">
+                        <button class="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                          <i class="bi bi-arrow-clockwise"></i>
+                          Update
+                        </button>
+                        <button class="remove-item flex items-center gap-2 text-sm font-medium text-red-600 hover:text-red-700 transition-colors">
+                          <i class="bi bi-trash"></i>
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cart Item 3 -->
+            <div class="cart-item rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
+              <div class="flex flex-col sm:flex-row gap-6">
+                <div class="flex-shrink-0">
+                  <div class="relative h-48 w-48 overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-white p-4">
+                    <img src="https://i.pinimg.com/1200x/52/ce/99/52ce99b8df2adf77f55ff42f18adc069.jpg" 
+                         alt="AirPods Pro" 
+                         class="h-full w-full object-contain">
+                    <div class="absolute top-3 left-3">
+                      <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
+                        Best Seller
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="flex-1 min-w-0">
+                  <div class="flex flex-col h-full">
+                    <div class="flex-1">
+                      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                        <div>
+                          <div class="mb-2">
+                            <span class="text-xs font-medium text-purple-600 uppercase tracking-wide">Audio</span>
+                          </div>
+                          <h3 class="text-xl font-bold text-gray-900 hover:text-teal-600 transition-colors">
+                            <a href="#">AirPods Pro (2nd Generation)</a>
+                          </h3>
+                          <p class="mt-2 text-gray-600">Active Noise Cancellation • Adaptive Transparency • Spatial Audio</p>
+                          
+                          <div class="mt-4">
+                            <div class="flex items-center gap-4">
+                              <div class="flex items-center gap-2">
+                                <i class="bi bi-check-circle text-green-500"></i>
+                                <span class="text-sm text-gray-600">Wireless Charging Case</span>
+                              </div>
+                              <div class="flex items-center gap-2">
+                                <i class="bi bi-check-circle text-green-500"></i>
+                                <span class="text-sm text-gray-600">6-hour battery life</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="flex flex-col items-end">
+                          <div class="text-3xl font-bold text-gray-900">$249.00</div>
+                          <div class="mt-2 text-sm text-green-600 font-medium">
+                            <i class="bi bi-truck mr-1"></i>
+                            Ships in 24 hours
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-6 border-t border-gray-100">
+                      <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-3">
+                          <button class="quantity-btn flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+                            <i class="bi bi-dash-lg text-gray-600"></i>
+                          </button>
+                          <input type="text" 
+                                 value="1" 
+                                 class="h-10 w-20 rounded-lg border border-gray-300 bg-white text-center text-lg font-bold text-gray-900 focus:border-teal-500 focus:ring-2 focus:ring-teal-200">
+                          <button class="quantity-btn flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+                            <i class="bi bi-plus-lg text-gray-600"></i>
+                          </button>
+                        </div>
+                        
+                        <button class="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-teal-600 transition-colors">
+                          <i class="bi bi-shield-check"></i>
+                          Add protection plan
+                        </button>
+                      </div>
+                      
+                      <div class="flex items-center gap-4">
+                        <button class="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                          <i class="bi bi-arrow-clockwise"></i>
+                          Update
+                        </button>
+                        <button class="remove-item flex items-center gap-2 text-sm font-medium text-red-600 hover:text-red-700 transition-colors">
+                          <i class="bi bi-trash"></i>
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cart Actions -->
+          <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <a href="product.html" 
+                 class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:shadow-sm transition-all">
+                <i class="bi bi-arrow-left"></i>
+                Continue Shopping
+              </a>
+              
+              <button class="rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                Update Cart
+              </button>
+            </div>
+            
+            <div class="flex items-center gap-4">
+              <button class="rounded-lg border border-red-300 bg-white px-6 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">
+                Clear Cart
+              </button>
+              
+              <a href="checkout.html"
+                 class="rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-8 py-3 text-sm font-medium text-white shadow-lg hover:shadow-xl hover:from-teal-700 hover:to-teal-600 transition-all">
+                Proceed to Checkout
+                <i class="bi bi-arrow-right ml-2"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Recently Viewed -->
+          <div class="mt-16">
+            <h3 class="text-2xl font-bold text-gray-900 mb-6">Recently Viewed</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <!-- Product Mini Card -->
+              <div class="group rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md transition-all">
+                <div class="mb-3 h-32 overflow-hidden rounded-lg bg-gray-50">
+                  <img src="https://images.unsplash.com/photo-1600003263720-95b45a4035d5?auto=format&fit=crop&w=400&q=80"
+                       alt="PS5"
+                       class="h-full w-full object-contain group-hover:scale-105 transition-transform">
+                </div>
+                <h4 class="text-sm font-medium text-gray-900">PlayStation 5</h4>
+                <div class="mt-2 flex items-center justify-between">
+                  <span class="font-bold text-gray-900">$499</span>
+                  <button class="rounded-full bg-gray-900 p-2 text-white hover:bg-black">
+                    <i class="bi bi-cart-plus text-sm"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Repeat for other products -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Summary Sidebar -->
+        <div class="lg:w-1/3">
+          <div class="sticky top-24">
+            <!-- Order Summary Card -->
+            <div class="rounded-2xl bg-gradient-to-b from-white to-gray-50 p-6 shadow-lg border border-gray-100">
+              <h2 class="text-2xl font-bold text-gray-900 mb-6">Order Summary</h2>
+              
+              <!-- Summary Details -->
+              <div class="space-y-4">
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Subtotal (3 items)</span>
+                  <span class="font-medium text-gray-900">$3,947.00</span>
+                </div>
+                
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Shipping</span>
+                  <span class="font-medium text-gray-900">$0.00</span>
+                </div>
+                
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Estimated Tax</span>
+                  <span class="font-medium text-gray-900">$315.76</span>
+                </div>
+                
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Discount</span>
+                  <span class="font-medium text-green-600">-$100.00</span>
+                </div>
+                
+                <!-- Promo Code -->
+                <div class="pt-4 border-t border-gray-200">
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="text-gray-600">Promo Code</span>
+                    <button class="text-sm font-medium text-teal-600 hover:text-teal-700">
+                      Have a code?
+                    </button>
+                  </div>
+                  <div class="flex gap-2">
+                    <input type="text" 
+                           placeholder="SUMMER2024"
+                           class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-200">
+                    <button class="rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white hover:from-teal-700 hover:to-teal-600 transition-all">
+                      Apply
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Total -->
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                  <div class="flex justify-between">
+                    <span class="text-lg font-bold text-gray-900">Total</span>
+                    <div class="text-right">
+                      <div class="text-3xl font-bold text-gray-900">$4,162.76</div>
+                      <div class="text-sm text-gray-500">USD</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Checkout Button -->
+              <a href="checkout.html"
+                 class="mt-6 block w-full rounded-xl bg-gradient-to-r from-teal-600 to-cyan-500 py-4 text-center font-medium text-white shadow-lg hover:shadow-xl hover:from-teal-700 hover:to-cyan-600 transition-all">
+                <i class="bi bi-lock-fill mr-2"></i>
+                Proceed to Checkout
+              </a>
+              
+              <!-- Payment Methods -->
+              <div class="mt-6 pt-6 border-t border-gray-200">
+                <p class="mb-3 text-sm text-gray-600">We accept:</p>
+                <div class="flex gap-3">
+                  <div class="h-8 w-12 rounded border bg-white p-1.5">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Mastercard_2019_logo.svg" alt="Mastercard" class="h-full w-full object-contain">
+                  </div>
+                  <div class="h-8 w-12 rounded border bg-white p-1.5">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" class="h-full w-full object-contain">
+                  </div>
+                  <div class="h-8 w-12 rounded border bg-white p-1.5">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="h-full w-full object-contain">
+                  </div>
+                  <div class="h-8 w-12 rounded border bg-white p-1.5">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Apple_pay_logo.svg" alt="Apple Pay" class="h-full w-full object-contain">
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Security Badge -->
+              <div class="mt-6 rounded-xl bg-gradient-to-r from-blue-50 to-teal-50 p-4 border border-blue-100">
+                <div class="flex items-center gap-3">
+                  <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
+                    <i class="bi bi-shield-check text-blue-600 text-lg"></i>
+                  </div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Secure Checkout</p>
+                    <p class="text-xs text-gray-600">256-bit SSL encryption</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Return Policy -->
+              <div class="mt-6 text-center">
+                <p class="text-xs text-gray-500">
+                  <i class="bi bi-arrow-counterclockwise mr-1"></i>
+                  30-day return policy • Free returns
+                </p>
+              </div>
+            </div>
+
+            <!-- Help Section -->
+            <div class="mt-6 rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
+              <h4 class="mb-4 font-medium text-gray-900">Need help with your order?</h4>
+              <div class="space-y-3">
+                <a href="#" class="flex items-center text-sm text-gray-600 hover:text-teal-600 transition-colors">
+                  <div class="mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-teal-100">
+                    <i class="bi bi-chat-left text-teal-600"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium">Live Chat Support</div>
+                    <div class="text-xs text-gray-500">Available 24/7</div>
+                  </div>
+                </a>
+                <a href="#" class="flex items-center text-sm text-gray-600 hover:text-teal-600 transition-colors">
+                  <div class="mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
+                    <i class="bi bi-telephone text-blue-600"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium">Call Us</div>
+                    <div class="text-xs text-gray-500">1-800-TECHSTORE</div>
+                  </div>
+                </a>
+                <a href="#" class="flex items-center text-sm text-gray-600 hover:text-teal-600 transition-colors">
+                  <div class="mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                    <i class="bi bi-envelope text-green-600"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium">Email Support</div>
+                    <div class="text-xs text-gray-500">support@techstore.com</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <!-- Shipping Estimate -->
+            <div class="mt-6 rounded-2xl bg-gradient-to-r from-teal-50 to-cyan-50 p-6 border border-teal-100">
+              <h4 class="mb-4 font-medium text-gray-900">Estimated Delivery</h4>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-white">
+                      <i class="bi bi-truck text-teal-600"></i>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">Standard Shipping</div>
+                      <div class="text-sm text-gray-600">3-5 business days</div>
+                    </div>
+                  </div>
+                  <div class="text-lg font-bold text-gray-900">FREE</div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-white">
+                      <i class="bi bi-lightning text-amber-600"></i>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">Express Shipping</div>
+                      <div class="text-sm text-gray-600">1-2 business days</div>
+                    </div>
+                  </div>
+                  <div class="text-lg font-bold text-gray-900">$19.99</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white mt-16">
+    <div class="mx-auto max-w-7xl px-4 pt-16 pb-8 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+        <div class="space-y-6">
+          <a href="index.html" class="inline-flex items-center gap-3">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-teal-600 to-cyan-500">
+              <i class="bi bi-cpu-fill text-white text-xl"></i>
+            </div>
+            <div>
+              <span class="text-2xl font-bold">TechStore</span>
+              <div class="text-xs font-medium text-teal-400">Premium Technology</div>
+            </div>
+          </a>
+          <p class="text-gray-400 text-sm leading-relaxed">
+            Your destination for premium technology products. We're committed to bringing you the latest innovations with exceptional service.
+          </p>
+          <div class="flex gap-4">
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="bi bi-facebook text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="bi bi-twitter-x text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="bi bi-instagram text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="bi bi-youtube text-xl"></i>
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold mb-6">Shop</h3>
+          <ul class="space-y-3">
+            <li><a href="product.html" class="text-gray-400 hover:text-white transition-colors text-sm">All Products</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">New Arrivals</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Best Sellers</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Special Offers</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Gift Cards</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-semibold mb-6">Support</h3>
+          <ul class="space-y-3">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Contact Us</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">FAQ</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Shipping Policy</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Returns & Refunds</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Warranty</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-semibold mb-6">Company</h3>
+          <ul class="space-y-3">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">About Us</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Careers</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Press</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Blog</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Store Locations</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-16 border-t border-gray-800 pt-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <p class="text-gray-400 text-sm">
+            © 2024 TechStore. All rights reserved.
+          </p>
+          <div class="flex flex-wrap gap-4 text-sm text-gray-400">
+            <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+            <span class="text-gray-600">•</span>
+            <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+            <span class="text-gray-600">•</span>
+            <a href="#" class="hover:text-white transition-colors">Cookie Policy</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Cart Sidebar Modal (Mobile) -->
+  <div id="cartModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/50"></div>
+    <div class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl">
+      <!-- Modal content -->
+    </div>
+  </div>
+
+  <script>
+    // Cart Functionality
+    let cartItems = 5;
+    const cartItemCount = document.getElementById('cart-item-count');
+    
+    // Remove Item Functionality
+    document.querySelectorAll('.remove-item').forEach(button => {
+      button.addEventListener('click', function() {
+        const cartItem = this.closest('.cart-item');
+        const itemName = cartItem.querySelector('h3').textContent;
+        
+        // Animate removal
+        cartItem.style.opacity = '0';
+        cartItem.style.transform = 'translateX(100px)';
+        cartItem.style.height = cartItem.offsetHeight + 'px';
+        
+        setTimeout(() => {
+          cartItem.style.height = '0';
+          cartItem.style.margin = '0';
+          cartItem.style.padding = '0';
+          cartItem.style.border = 'none';
+          
+          setTimeout(() => {
+            cartItem.remove();
+            updateCartCount(-1);
+            updateCartTotal();
+            showNotification(`Removed: ${itemName}`);
+          }, 300);
+        }, 300);
+      });
+    });
+    
+    // Quantity Controls
+    document.querySelectorAll('.quantity-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const input = this.parentElement.querySelector('input[type="text"]');
+        let value = parseInt(input.value);
+        
+        if (this.querySelector('.bi-dash-lg') && value > 1) {
+          input.value = value - 1;
+        } else if (this.querySelector('.bi-plus-lg')) {
+          input.value = value + 1;
+        }
+        
+        updateCartTotal();
+      });
+    });
+    
+    // Update Cart Count
+    function updateCartCount(change) {
+      cartItems += change;
+      if (cartItems < 0) cartItems = 0;
+      cartItemCount.textContent = cartItems;
+      
+      // Update progress bar
+      const progress = document.querySelector('.progress-bar');
+      const newWidth = Math.min(100, 75 + (cartItems * 5));
+      progress.style.width = newWidth + '%';
+      
+      // Update free shipping message
+      const shippingMessage = document.querySelector('.text-teal-800');
+      if (shippingMessage) {
+        const remaining = Math.max(0, 50.01 - (cartItems * 10));
+        if (remaining <= 0) {
+          shippingMessage.innerHTML = '<span class="font-bold">🎉 Congratulations! You got FREE shipping!</span>';
+        } else {
+          shippingMessage.innerHTML = `Add <span class="font-bold">$${remaining.toFixed(2)}</span> more for <span class="font-bold">FREE shipping!</span>`;
+        }
+      }
+    }
+    
+    // Update Cart Total
+    function updateCartTotal() {
+      let subtotal = 0;
+      document.querySelectorAll('.cart-item').forEach(item => {
+        const priceText = item.querySelector('.text-3xl').textContent;
+        const price = parseFloat(priceText.replace('$', '').replace(',', ''));
+        const quantity = parseInt(item.querySelector('input[type="text"]').value);
+        subtotal += price * quantity;
+      });
+      
+      // Update summary
+      const subtotalElement = document.querySelector('.flex.justify-between span:contains("Subtotal")');
+      if (subtotalElement) {
+        subtotalElement.nextElementSibling.textContent = `$${subtotal.toFixed(2)}`;
+      }
+      
+      // Update total
+      const tax = subtotal * 0.08;
+      const discount = 100;
+      const total = subtotal + tax - discount;
+      
+      const totalElement = document.querySelector('.text-3xl.font-bold.text-gray-900');
+      if (totalElement) {
+        totalElement.textContent = `$${total.toFixed(2)}`;
+      }
+    }
+    
+    // Show Notification
+    function showNotification(message) {
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-24 right-8 z-50 rounded-xl bg-gradient-to-r from-teal-600 to-cyan-500 px-6 py-4 text-white shadow-2xl transform translate-x-full opacity-0 transition-all duration-300';
+      notification.innerHTML = `
+        <div class="flex items-center gap-3">
+          <i class="bi bi-info-circle text-xl"></i>
+          <div>
+            <div class="font-semibold">${message}</div>
+            <div class="text-sm text-teal-100">Cart updated successfully</div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.classList.remove('translate-x-full', 'opacity-0');
+        notification.classList.add('translate-x-0', 'opacity-100');
+      }, 10);
+      
+      setTimeout(() => {
+        notification.classList.remove('translate-x-0', 'opacity-100');
+        notification.classList.add('translate-x-full', 'opacity-0');
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+    
+    // Promo Code Application
+    const promoButton = document.querySelector('button:contains("Apply")');
+    if (promoButton) {
+      promoButton.addEventListener('click', function() {
+        const input = this.previousElementSibling;
+        const code = input.value.trim();
+        
+        if (code === 'SUMMER2024') {
+          showNotification('Promo code applied successfully!');
+          input.value = '';
+          input.placeholder = 'Applied: SUMMER2024';
+          input.disabled = true;
+          this.textContent = 'Applied';
+          this.disabled = true;
+          this.classList.remove('hover:from-teal-700', 'hover:to-teal-600');
+          this.classList.add('bg-green-500');
+          
+          // Update total with discount
+          updateCartTotal();
+        } else if (code) {
+          showNotification('Invalid promo code. Try "SUMMER2024"');
+        }
+      });
+    }
+    
+    // Clear Cart
+    const clearCartButton = document.querySelector('button:contains("Clear Cart")');
+    if (clearCartButton) {
+      clearCartButton.addEventListener('click', function() {
+        if (confirm('Are you sure you want to clear your cart?')) {
+          document.querySelectorAll('.cart-item').forEach(item => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(-20px)';
+            setTimeout(() => item.remove(), 300);
+          });
+          
+          setTimeout(() => {
+            cartItems = 0;
+            cartItemCount.textContent = '0';
+            showNotification('Cart cleared successfully');
+            
+            // Show empty state
+            const cartItemsContainer = document.querySelector('.space-y-6');
+            const emptyState = document.createElement('div');
+            emptyState.className = 'empty-cart text-center py-16';
+            emptyState.innerHTML = `
+              <div class="mx-auto max-w-md">
+                <div class="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full bg-gray-100">
+                  <i class="bi bi-cart-x text-4xl text-gray-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">Your cart is empty</h3>
+                <p class="text-gray-600 mb-8">Looks like you haven't added any items to your cart yet.</p>
+                <a href="product.html" class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-8 py-3 font-medium text-white hover:shadow-lg">
+                  <i class="bi bi-bag"></i>
+                  Start Shopping
+                </a>
+              </div>
+            `;
+            cartItemsContainer.appendChild(emptyState);
+          }, 500);
+        }
+      });
+    }
+    
+    // Initialize cart total
+    updateCartTotal();
+    
+    // Smooth scroll to top
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
