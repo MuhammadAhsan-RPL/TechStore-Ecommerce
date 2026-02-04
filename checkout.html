@@ -6,50 +6,7 @@
     <title>Checkout | TechStore</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <style>
-        .checkout-step {
-            @apply relative flex-1;
-        }
-        .checkout-step.active .step-number {
-            @apply bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-lg;
-        }
-        .checkout-step.completed .step-number {
-            @apply bg-green-500 text-white;
-        }
-        .checkout-step .step-label {
-            @apply mt-2 text-sm font-medium text-gray-600;
-        }
-        .checkout-step.active .step-label {
-            @apply text-teal-600 font-semibold;
-        }
-        
-        /* Form styles */
-        .form-input {
-            @apply w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-200;
-        }
-        .form-label {
-            @apply mb-2 block text-sm font-medium text-gray-700;
-        }
-        
-        /* Payment method cards */
-        .payment-method {
-            @apply rounded-xl border-2 border-gray-200 bg-white p-5 cursor-pointer transition-all;
-        }
-        .payment-method:hover {
-            @apply border-teal-300 bg-teal-50;
-        }
-        .payment-method.active {
-            @apply border-teal-500 bg-teal-50;
-        }
-        
-        /* Shipping method */
-        .shipping-method {
-            @apply rounded-xl border-2 border-gray-200 bg-white p-5 cursor-pointer transition-all;
-        }
-        .shipping-method.active {
-            @apply border-teal-500 bg-teal-50;
-        }
-    </style>
+
 </head>
 <body class="bg-gray-50 font-sans">
     <!-- Header -->
