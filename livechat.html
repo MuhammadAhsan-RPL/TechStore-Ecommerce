@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Chat Support | TechStore</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <style>
+    .chat-container {
+      height: calc(100vh - 200px);
+    }
+    
+    .message-bubble {
+      max-width: 70%;
+      border-radius: 1.5rem;
+      padding: 0.75rem 1.25rem;
+      margin-bottom: 0.75rem;
+      position: relative;
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    .message-bubble.user {
+      background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+      color: white;
+      margin-left: auto;
+      border-bottom-right-radius: 0.5rem;
+    }
+    
+    .message-bubble.agent {
+      background-color: #f3f4f6;
+      color: #374151;
+      margin-right: auto;
+      border-bottom-left-radius: 0.5rem;
+    }
+    
+    .typing-indicator {
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    .typing-indicator span {
+      height: 8px;
+      width: 8px;
+      background: #9ca3af;
+      border-radius: 50%;
+      margin: 0 2px;
+      animation: typing 1.4s infinite ease-in-out;
+    }
+    
+    .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+    .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0s; }
+    
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-8px); }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .chat-sidebar-item {
+      transition: all 0.2s ease;
+    }
+    
+    .chat-sidebar-item:hover {
+      background-color: #f9fafb;
+    }
+    
+    .chat-sidebar-item.active {
+      background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+      color: white;
+    }
+    
+    .unread-badge {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #ef4444;
+      display: inline-block;
+    }
+    
+    .attachment-preview {
+      border: 2px dashed #d1d5db;
+      border-radius: 0.75rem;
+    }
+    
+    .chat-date-divider {
+      display: flex;
+      align-items: center;
+      margin: 1.5rem 0;
+    }
+    
+    .chat-date-divider::before,
+    .chat-date-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e5e7eb;
+    }
+    
+    .chat-date-divider span {
+      padding: 0 1rem;
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+
+<body class="font-sans antialiased bg-gray-50">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100">
+    <div class="mx-auto flex h-20 max-w-7xl items-center gap-8 px-4 sm:px-6 lg:px-8">
+      <a href="index.html" class="group flex items-center gap-3">
+        <div class="relative">
+          <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-teal-400 to-cyan-400 opacity-20 blur group-hover:opacity-30 transition-opacity"></div>
+          <div class="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-teal-600 to-cyan-500">
+            <i class="bi bi-cpu-fill text-white text-xl"></i>
+          </div>
+        </div>
+        <div>
+          <span class="text-2xl font-bold tracking-tight text-gray-900">TechStore</span>
+          <div class="text-xs font-medium text-teal-600">Premium Technology</div>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex flex-1 items-center justify-center">
+        <ul class="flex items-center gap-8 text-sm font-medium">
+          <li><a href="index.html" class="text-gray-700 hover:text-teal-600 transition-colors">Home</a></li>
+          <li><a href="product.html" class="text-gray-700 hover:text-teal-600 transition-colors">Products</a></li>
+          <li><a href="support.html" class="text-gray-700 hover:text-teal-600 transition-colors">Support</a></li>
+          <li><a href="livechat.html" class="text-teal-600 font-semibold">Live Chat</a></li>
+        </ul>
+      </nav>
+
+      <div class="flex flex-1 items-center justify-end">
+        <div class="flex items-center gap-4">
+          <a href="notification.html" class="relative rounded-full p-2 text-gray-600 hover:bg-gray-100 hover:text-teal-600 transition-colors">
+            <i class="bi bi-bell text-lg"></i>
+            <span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-xs font-medium text-white">3</span>
+          </a>
+          
+          <a href="account.html" class="hidden sm:flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors">
+            <div class="h-8 w-8 rounded-full bg-gradient-to-r from-teal-400 to-cyan-400"></div>
+            <div class="flex items-center gap-1">
+              Account
+              <i class="bi bi-chevron-down text-xs"></i>
+            </div>
+          </a>
+          
+          <button class="rounded-lg border border-gray-300 p-2.5 text-gray-600 hover:bg-gray-50 lg:hidden">
+            <i class="bi bi-list text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="min-h-screen">
+    <!-- Chat Header -->
+    <div class="bg-white border-b border-gray-200">
+      <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">Live Chat Support</h1>
+            <p class="text-gray-600 mt-1">Real-time assistance from our support team</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              <span class="text-sm text-gray-600">3 agents online</span>
+            </div>
+            <button onclick="endChat()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm">
+              End Chat
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <!-- Chat Sidebar -->
+        <div class="lg:col-span-1">
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <!-- Chat History -->
+            <div class="mb-6">
+              <h3 class="font-semibold text-gray-900 mb-4">Chat History</h3>
+              <div class="space-y-2">
+                <div class="chat-sidebar-item active p-3 rounded-lg cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-teal-400 to-cyan-400 flex items-center justify-center text-white">
+                      <i class="bi bi-headset"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="font-medium text-sm">Support Agent</div>
+                      <div class="text-xs text-gray-500 truncate">Online • Tech support</div>
+                    </div>
+                    <span class="text-xs text-gray-500">Now</span>
+                  </div>
+                </div>
+                
+                <div class="chat-sidebar-item p-3 rounded-lg cursor-pointer hover:bg-gray-50">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                      <i class="bi bi-person text-gray-600"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="font-medium text-sm">Sarah Johnson</div>
+                      <div class="text-xs text-gray-500 truncate">Order #TS-7842</div>
+                    </div>
+                    <span class="text-xs text-gray-500">2h ago</span>
+                  </div>
+                </div>
+                
+                <div class="chat-sidebar-item p-3 rounded-lg cursor-pointer hover:bg-gray-50">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                      <i class="bi bi-person text-gray-600"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="font-medium text-sm">Michael Chen</div>
+                      <div class="text-xs text-gray-500 truncate">Technical issue</div>
+                    </div>
+                    <span class="text-xs text-gray-500">Yesterday</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-4">Quick Actions</h3>
+              <div class="space-y-2">
+                <button onclick="sendPredefinedMessage('I need help with my order')" class="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 text-sm">
+                  <div class="flex items-center gap-2">
+                    <i class="bi bi-bag text-gray-500"></i>
+                    <span>Order Help</span>
+                  </div>
+                </button>
+                <button onclick="sendPredefinedMessage('I have a technical issue')" class="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 text-sm">
+                  <div class="flex items-center gap-2">
+                    <i class="bi bi-tools text-gray-500"></i>
+                    <span>Technical Support</span>
+                  </div>
+                </button>
+                <button onclick="sendPredefinedMessage('I want to return a product')" class="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 text-sm">
+                  <div class="flex items-center gap-2">
+                    <i class="bi bi-arrow-return-left text-gray-500"></i>
+                    <span>Returns & Refunds</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Agent Info -->
+            <div class="mt-6 pt-6 border-t border-gray-200">
+              <h3 class="font-semibold text-gray-900 mb-4">Your Support Agent</h3>
+              <div class="flex items-center gap-3 p-3 bg-teal-50 rounded-lg border border-teal-100">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 flex items-center justify-center text-white">
+                  <i class="bi bi-person-fill"></i>
+                </div>
+                <div>
+                  <div class="font-medium text-gray-900">Alex Morgan</div>
+                  <div class="text-sm text-gray-600">Senior Support Specialist</div>
+                  <div class="flex items-center gap-1 mt-1">
+                    <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                    <span class="text-xs text-green-600">Online</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Main Area -->
+        <div class="lg:col-span-3">
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+            <!-- Chat Header -->
+            <div class="border-b border-gray-200 p-4 bg-gray-50">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-gradient-to-r from-teal-400 to-cyan-400 flex items-center justify-center text-white">
+                    <i class="bi bi-headset"></i>
+                  </div>
+                  <div>
+                    <div class="font-semibold text-gray-900">TechStore Support</div>
+                    <div class="text-sm text-gray-600 flex items-center gap-2">
+                      <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                      <span>Typically replies in 2 minutes</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button onclick="toggleSound()" class="p-2 rounded-lg hover:bg-gray-200" id="soundToggle">
+                    <i class="bi bi-volume-up"></i>
+                  </button>
+                  <button onclick="clearChat()" class="p-2 rounded-lg hover:bg-gray-200">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                  <button onclick="downloadChat()" class="p-2 rounded-lg hover:bg-gray-200">
+                    <i class="bi bi-download"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Chat Messages -->
+            <div class="flex-1 p-4 overflow-y-auto chat-container" id="chatMessages">
+              <!-- Date Divider -->
+              <div class="chat-date-divider">
+                <span>Today</span>
+              </div>
+              
+              <!-- Agent Message -->
+              <div class="message-bubble agent">
+                <div class="font-medium text-gray-900 mb-1">Alex Morgan</div>
+                <p>Hello! 👋 Welcome to TechStore Support. My name is Alex and I'll be assisting you today. How can I help you?</p>
+                <div class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                  <i class="bi bi-clock"></i>
+                  <span>2:30 PM</span>
+                </div>
+              </div>
+              
+              <!-- User Message -->
+              <div class="message-bubble user">
+                <div class="font-medium text-white mb-1">You</div>
+                <p>Hi Alex! I need help tracking my order #TS-7842. It says shipped but I haven't received any tracking updates.</p>
+                <div class="text-xs text-teal-100 mt-2 flex items-center gap-1">
+                  <i class="bi bi-check2-all"></i>
+                  <span>2:31 PM • Delivered</span>
+                </div>
+              </div>
+              
+              <!-- Agent Message -->
+              <div class="message-bubble agent">
+                <div class="font-medium text-gray-900 mb-1">Alex Morgan</div>
+                <p>I'd be happy to help you with that! Let me check the status of your order #TS-7842.</p>
+                <div class="text-xs text-gray-500 mt-2">2:32 PM</div>
+              </div>
+              
+              <!-- Agent Message with Typing -->
+              <div class="message-bubble agent">
+                <div class="font-medium text-gray-900 mb-1">Alex Morgan</div>
+                <p>I can see your order was shipped yesterday via UPS. The tracking number is <strong>1Z999AA1234567890</strong>.</p>
+                <p class="mt-2">It's currently at the distribution center in your city with estimated delivery for tomorrow between 10 AM - 2 PM.</p>
+                <div class="text-xs text-gray-500 mt-2">2:33 PM</div>
+              </div>
+              
+              <!-- User Message -->
+              <div class="message-bubble user">
+                <div class="font-medium text-white mb-1">You</div>
+                <p>Thank you! Can you also tell me if signature is required for delivery?</p>
+                <div class="text-xs text-teal-100 mt-2">2:34 PM</div>
+              </div>
+              
+              <!-- Agent Typing Indicator -->
+              <div class="message-bubble agent">
+                <div class="font-medium text-gray-900 mb-1">Alex Morgan</div>
+                <div class="typing-indicator">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Chat Input -->
+            <div class="border-t border-gray-200 p-4">
+              <!-- Attachment Preview -->
+              <div id="attachmentPreview" class="hidden mb-3 attachment-preview p-3">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <i class="bi bi-file-earmark-text text-2xl text-gray-400"></i>
+                    <div>
+                      <div class="font-medium text-sm" id="fileName">screenshot.png</div>
+                      <div class="text-xs text-gray-500" id="fileSize">1.2 MB</div>
+                    </div>
+                  </div>
+                  <button onclick="removeAttachment()" class="text-gray-400 hover:text-gray-600">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Input Area -->
+              <div class="flex gap-3">
+                <div class="flex-1 relative">
+                  <input type="text" 
+                         placeholder="Type your message..."
+                         class="w-full rounded-xl border border-gray-300 pl-4 pr-24 py-3 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 focus:outline-none"
+                         id="messageInput"
+                         onkeypress="handleKeyPress(event)">
+                  <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                    <button onclick="toggleEmojiPicker()" class="p-2 text-gray-500 hover:text-gray-700">
+                      <i class="bi bi-emoji-smile"></i>
+                    </button>
+                    <label for="fileUpload" class="p-2 text-gray-500 hover:text-gray-700 cursor-pointer">
+                      <i class="bi bi-paperclip"></i>
+                      <input type="file" id="fileUpload" class="hidden" onchange="handleFileUpload(event)">
+                    </label>
+                  </div>
+                </div>
+                <button onclick="sendMessage()" class="px-6 py-3 bg-gradient-to-r from-teal-600 to-cyan-500 text-white font-medium rounded-xl hover:shadow-lg transition-shadow">
+                  Send
+                </button>
+              </div>
+              
+              <!-- Quick Replies -->
+              <div class="mt-3 flex flex-wrap gap-2">
+                <button onclick="sendQuickReply('What are your business hours?')" class="px-3 py-1.5 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                  Business hours?
+                </button>
+                <button onclick="sendQuickReply('Can I speak to a supervisor?')" class="px-3 py-1.5 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                  Speak to supervisor
+                </button>
+                <button onclick="sendQuickReply('I need warranty information')" class="px-3 py-1.5 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                  Warranty info
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Chat Features -->
+          <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-teal-100 flex items-center justify-center">
+                  <i class="bi bi-chat-square-text text-teal-600"></i>
+                </div>
+                <div>
+                  <div class="font-medium text-gray-900">Chat Transcript</div>
+                  <div class="text-sm text-gray-600">Save this conversation for reference</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                  <i class="bi bi-star text-blue-600"></i>
+                </div>
+                <div>
+                  <div class="font-medium text-gray-900">Rate Support</div>
+                  <div class="text-sm text-gray-600">How was your experience?</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                  <i class="bi bi-share text-purple-600"></i>
+                </div>
+                <div>
+                  <div class="font-medium text-gray-900">Share Chat</div>
+                  <div class="text-sm text-gray-600">Send transcript via email</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white mt-12">
+    <div class="mx-auto max-w-7xl px-4 pt-12 pb-8 sm:px-6 lg:px-8">
+      <div class="text-center">
+        <p class="text-gray-400 text-sm">
+          © 2024 TechStore Live Chat. For emergencies, call +1 (555) 123-4567.
+        </p>
+        <p class="text-gray-500 text-xs mt-2">
+          Chat conversations are recorded for quality assurance and training purposes.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Emoji Picker (Hidden by default) -->
+  <div id="emojiPicker" class="hidden absolute bottom-24 right-96 bg-white rounded-xl shadow-lg border border-gray-200 p-4 w-64 z-50">
+    <div class="grid grid-cols-6 gap-2">
+      <button onclick="insertEmoji('😊')" class="p-2 hover:bg-gray-100 rounded">😊</button>
+      <button onclick="insertEmoji('😂')" class="p-2 hover:bg-gray-100 rounded">😂</button>
+      <button onclick="insertEmoji('😎')" class="p-2 hover:bg-gray-100 rounded">😎</button>
+      <button onclick="insertEmoji('🤔')" class="p-2 hover:bg-gray-100 rounded">🤔</button>
+      <button onclick="insertEmoji('👍')" class="p-2 hover:bg-gray-100 rounded">👍</button>
+      <button onclick="insertEmoji('❤️')" class="p-2 hover:bg-gray-100 rounded">❤️</button>
+      <button onclick="insertEmoji('🎉')" class="p-2 hover:bg-gray-100 rounded">🎉</button>
+      <button onclick="insertEmoji('🔥')" class="p-2 hover:bg-gray-100 rounded">🔥</button>
+      <button onclick="insertEmoji('✨')" class="p-2 hover:bg-gray-100 rounded">✨</button>
+      <button onclick="insertEmoji('⚠️')" class="p-2 hover:bg-gray-100 rounded">⚠️</button>
+      <button onclick="insertEmoji('✅')" class="p-2 hover:bg-gray-100 rounded">✅</button>
+      <button onclick="insertEmoji('❌')" class="p-2 hover:bg-gray-100 rounded">❌</button>
+    </div>
+  </div>
+
+  <script>
+    let soundEnabled = true;
+    let emojiPickerVisible = false;
+    
+    // Send message function
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const message = input.value.trim();
+      
+      if (!message) return;
+      
+      // Add user message
+      addMessage(message, 'user');
+      input.value = '';
+      
+      // Simulate agent reply after delay
+      setTimeout(() => {
+        const replies = [
+          "I understand. Let me check that for you.",
+          "Thanks for providing that information.",
+          "I'll look into this right away.",
+          "Can you provide more details about the issue?",
+          "I have the information you need.",
+          "Let me transfer you to the appropriate department."
+        ];
+        const randomReply = replies[Math.floor(Math.random() * replies.length)];
+        addMessage(randomReply, 'agent');
+        
+        // Scroll to bottom
+        scrollToBottom();
+      }, 1500);
+      
+      // Play sound if enabled
+      if (soundEnabled) {
+        playSound();
+      }
+      
+      scrollToBottom();
+    }
+    
+    // Add message to chat
+    function addMessage(text, sender) {
+      const chatContainer = document.getElementById('chatMessages');
+      const now = new Date();
+      const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message-bubble ${sender}`;
+      messageDiv.innerHTML = `
+        <div class="font-medium ${sender === 'user' ? 'text-white' : 'text-gray-900'} mb-1">
+          ${sender === 'user' ? 'You' : 'Alex Morgan'}
+        </div>
+        <p>${text}</p>
+        <div class="text-xs ${sender === 'user' ? 'text-teal-100' : 'text-gray-500'} mt-2 flex items-center gap-1">
+          <i class="bi bi-clock"></i>
+          <span>${timeString}</span>
+          ${sender === 'user' ? '<i class="bi bi-check2-all ml-2"></i>' : ''}
+        </div>
+      `;
+      
+      chatContainer.appendChild(messageDiv);
+      scrollToBottom();
+    }
+    
+    // Send quick reply
+    function sendQuickReply(text) {
+      document.getElementById('messageInput').value = text;
+      sendMessage();
+    }
+    
+    // Send predefined message
+    function sendPredefinedMessage(text) {
+      addMessage(text, 'user');
+      
+      setTimeout(() => {
+        addMessage("I can help you with that! Please provide your order number or account details.", 'agent');
+        scrollToBottom();
+      }, 1000);
+    }
+    
+    // Handle file upload
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const preview = document.getElementById('attachmentPreview');
+      document.getElementById('fileName').textContent = file.name;
+      document.getElementById('fileSize').textContent = formatFileSize(file.size);
+      preview.classList.remove('hidden');
+      
+      // Auto-send after 2 seconds
+      setTimeout(() => {
+        addMessage(`Sent file: ${file.name}`, 'user');
+        setTimeout(() => {
+          addMessage("I've received your file. Let me review it.", 'agent');
+          scrollToBottom();
+        }, 1000);
+        preview.classList.add('hidden');
+      }, 2000);
+    }
+    
+    // Remove attachment
+    function removeAttachment() {
+      document.getElementById('attachmentPreview').classList.add('hidden');
+      document.getElementById('fileUpload').value = '';
+    }
+    
+    // Format file size
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Toggle emoji picker
+    function toggleEmojiPicker() {
+      const picker = document.getElementById('emojiPicker');
+      emojiPickerVisible = !emojiPickerVisible;
+      picker.classList.toggle('hidden');
+      
+      if (emojiPickerVisible) {
+        // Position picker
+        const input = document.getElementById('messageInput');
+        const rect = input.getBoundingClientRect();
+        picker.style.bottom = `${window.innerHeight - rect.top + 60}px`;
+        picker.style.left = `${rect.right - 250}px`;
+      }
+    }
+    
+    // Insert emoji
+    function insertEmoji(emoji) {
+      const input = document.getElementById('messageInput');
+      input.value += emoji;
+      input.focus();
+      toggleEmojiPicker();
+    }
+    
+    // Toggle sound
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const button = document.getElementById('soundToggle');
+      button.innerHTML = soundEnabled ? 
+        '<i class="bi bi-volume-up"></i>' : 
+        '<i class="bi bi-volume-mute"></i>';
+    }
+    
+    // Play notification sound
+    function playSound() {
+      // Simple beep sound simulation
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.value = 800;
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.1);
+    }
+    
+    // End chat
+    function endChat() {
+      if (confirm("Are you sure you want to end this chat?")) {
+        addMessage("Chat ended by user.", 'system');
+        setTimeout(() => {
+          window.location.href = 'support.html';
+        }, 2000);
+      }
+    }
+    
+    // Clear chat
+    function clearChat() {
+      if (confirm("Clear all messages in this chat?")) {
+        const chatContainer = document.getElementById('chatMessages');
+        // Keep only the first few messages
+        while (chatContainer.children.length > 3) {
+          chatContainer.removeChild(chatContainer.lastChild);
+        }
+        addMessage("Chat history cleared.", 'system');
+      }
+    }
+    
+    // Download chat transcript
+    function downloadChat() {
+      const messages = document.querySelectorAll('.message-bubble');
+      let transcript = "TechStore Live Chat Transcript\n";
+      transcript += "Generated: " + new Date().toLocaleString() + "\n\n";
+      
+      messages.forEach(msg => {
+        const sender = msg.classList.contains('user') ? 'You' : 
+                      msg.classList.contains('agent') ? 'Support Agent' : 'System';
+        const text = msg.querySelector('p').textContent;
+        const time = msg.querySelector('.text-xs span').textContent;
+        transcript += `[${time}] ${sender}: ${text}\n`;
+      });
+      
+      const blob = new Blob([transcript], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `chat-transcript-${new Date().toISOString().slice(0,10)}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }
+    
+    // Handle Enter key press
+    function handleKeyPress(event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+      }
+    }
+    
+    // Scroll to bottom of chat
+    function scrollToBottom() {
+      const container = document.getElementById('chatMessages');
+      container.scrollTop = container.scrollHeight;
+    }
+    
+    // Close emoji picker when clicking outside
+    document.addEventListener('click', (event) => {
+      const picker = document.getElementById('emojiPicker');
+      const emojiButton = document.querySelector('[onclick="toggleEmojiPicker()"]');
+      
+      if (emojiPickerVisible && 
+          !picker.contains(event.target) && 
+          !emojiButton.contains(event.target)) {
+        toggleEmojiPicker();
+      }
+    });
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      scrollToBottom();
+      
+      // Simulate agent greeting if no recent messages
+      setTimeout(() => {
+        if (!document.querySelector('.message-bubble.agent')) {
+          addMessage("Hello! How can I help you today?", 'agent');
+        }
+      }, 500);
+    });
+  </script>
+
+</body>
+</html>

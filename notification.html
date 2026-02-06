@@ -1,0 +1,1058 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notifications | TechStore</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <style>
+    .notification-item {
+      transition: all 0.2s ease;
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    .notification-item.unread {
+      background-color: #f0f9ff;
+      border-left: 4px solid #0d9488;
+    }
+    
+    .notification-item:hover {
+      background-color: #f9fafb;
+      transform: translateX(4px);
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .notification-badge {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    
+    .notification-badge.order { background-color: #0d9488; }
+    .notification-badge.promo { background-color: #ef4444; }
+    .notification-badge.system { background-color: #3b82f6; }
+    .notification-badge.security { background-color: #f59e0b; }
+    .notification-badge.social { background-color: #8b5cf6; }
+    
+    .filter-btn.active {
+      background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
+    }
+    
+    .notification-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .notification-icon.order {
+      background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+    }
+    
+    .notification-icon.promo {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+    
+    .notification-icon.system {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    }
+    
+    .notification-icon.security {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+    
+    .notification-icon.social {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    }
+    
+    .time-indicator {
+      font-size: 0.75rem;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .notification-actions {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    
+    .notification-item:hover .notification-actions {
+      opacity: 1;
+    }
+    
+    .empty-state {
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .notification-count {
+      min-width: 20px;
+      height: 20px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body class="font-sans antialiased bg-gray-50">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100">
+    <div class="mx-auto flex h-20 max-w-7xl items-center gap-8 px-4 sm:px-6 lg:px-8">
+      <a href="index.html" class="group flex items-center gap-3">
+        <div class="relative">
+          <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-teal-400 to-cyan-400 opacity-20 blur group-hover:opacity-30 transition-opacity"></div>
+          <div class="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-teal-600 to-cyan-500">
+            <i class="bi bi-cpu-fill text-white text-xl"></i>
+          </div>
+        </div>
+        <div>
+          <span class="text-2xl font-bold tracking-tight text-gray-900">TechStore</span>
+          <div class="text-xs font-medium text-teal-600">Premium Technology</div>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex flex-1 items-center justify-center">
+        <ul class="flex items-center gap-8 text-sm font-medium">
+          <li><a href="index.html" class="text-gray-700 hover:text-teal-600 transition-colors">Home</a></li>
+          <li><a href="product.html" class="text-gray-700 hover:text-teal-600 transition-colors">Products</a></li>
+          <li><a href="categories.html" class="text-gray-700 hover:text-teal-600 transition-colors">Categories</a></li>
+          <li><a href="deals.html" class="text-gray-700 hover:text-teal-600 transition-colors">Deals</a></li>
+          <li><a href="notification.html" class="text-teal-600 font-semibold">Notifications</a></li>
+        </ul>
+      </nav>
+
+      <div class="flex flex-1 items-center justify-end">
+        <div class="flex items-center gap-4">
+          <a href="notification.html" class="relative rounded-full p-2 text-teal-600 hover:bg-gray-100 transition-colors">
+            <i class="bi bi-bell-fill text-lg"></i>
+            <span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-xs font-medium text-white notification-count">12</span>
+          </a>
+          
+          <a href="livechat.html" class="hidden sm:inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-green-500 flex items-center justify-center text-white">
+              <i class="bi bi-chat-dots"></i>
+            </div>
+            <span>Live Chat</span>
+          </a>
+          
+          <a href="account.html" class="hidden sm:flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors">
+            <div class="h-8 w-8 rounded-full bg-gradient-to-r from-teal-400 to-cyan-400"></div>
+            <div class="flex items-center gap-1">
+              Account
+              <i class="bi bi-chevron-down text-xs"></i>
+            </div>
+          </a>
+          
+          <button class="rounded-lg border border-gray-300 p-2.5 text-gray-600 hover:bg-gray-50 lg:hidden">
+            <i class="bi bi-list text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="min-h-screen">
+    <!-- Header Section -->
+    <div class="bg-white border-b border-gray-100">
+      <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900">Notifications</h1>
+            <p class="text-gray-600 mt-2">Stay updated with your orders, promotions, and account activity</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button onclick="markAllAsRead()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm">
+              <i class="bi bi-check2-all mr-2"></i>
+              Mark All Read
+            </button>
+            <button onclick="clearAllNotifications()" class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:shadow-lg text-sm">
+              <i class="bi bi-trash mr-2"></i>
+              Clear All
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <!-- Sidebar Filters -->
+        <div class="lg:col-span-1">
+          <div class="sticky top-24 space-y-6">
+            <!-- Notification Stats -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 class="font-semibold text-gray-900 mb-4">Notification Summary</h3>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="notification-badge order"></span>
+                    <span class="text-sm text-gray-700">Orders</span>
+                  </div>
+                  <span class="font-medium text-gray-900">5</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="notification-badge promo"></span>
+                    <span class="text-sm text-gray-700">Promotions</span>
+                  </div>
+                  <span class="font-medium text-gray-900">4</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="notification-badge system"></span>
+                    <span class="text-sm text-gray-700">System</span>
+                  </div>
+                  <span class="font-medium text-gray-900">2</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="notification-badge security"></span>
+                    <span class="text-sm text-gray-700">Security</span>
+                  </div>
+                  <span class="font-medium text-gray-900">1</span>
+                </div>
+                <div class="pt-4 border-t">
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-900">Total Unread</span>
+                    <span class="px-3 py-1 bg-teal-100 text-teal-800 text-sm font-medium rounded-full">12</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Filter By Type -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 class="font-semibold text-gray-900 mb-4">Filter by Type</h3>
+              <div class="space-y-2">
+                <button onclick="filterNotifications('all')" class="filter-btn active w-full text-left px-4 py-3 rounded-lg text-sm font-medium">
+                  <i class="bi bi-grid mr-3"></i>
+                  All Notifications
+                  <span class="float-right notification-count bg-teal-500 text-white">12</span>
+                </button>
+                <button onclick="filterNotifications('order')" class="filter-btn w-full text-left px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 text-sm">
+                  <i class="bi bi-bag mr-3"></i>
+                  Orders & Shipping
+                  <span class="float-right notification-count bg-teal-500 text-white">5</span>
+                </button>
+                <button onclick="filterNotifications('promo')" class="filter-btn w-full text-left px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 text-sm">
+                  <i class="bi bi-percent mr-3"></i>
+                  Promotions & Deals
+                  <span class="float-right notification-count bg-red-500 text-white">4</span>
+                </button>
+                <button onclick="filterNotifications('system')" class="filter-btn w-full text-left px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 text-sm">
+                  <i class="bi bi-gear mr-3"></i>
+                  System Updates
+                  <span class="float-right notification-count bg-blue-500 text-white">2</span>
+                </button>
+                <button onclick="filterNotifications('security')" class="filter-btn w-full text-left px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 text-sm">
+                  <i class="bi bi-shield-check mr-3"></i>
+                  Security Alerts
+                  <span class="float-right notification-count bg-amber-500 text-white">1</span>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Notification Settings -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 class="font-semibold text-gray-900 mb-4">Notification Settings</h3>
+              <div class="space-y-3">
+                <label class="flex items-center justify-between">
+                  <span class="text-sm text-gray-700">Push Notifications</span>
+                  <input type="checkbox" class="toggle-checkbox" checked>
+                </label>
+                <label class="flex items-center justify-between">
+                  <span class="text-sm text-gray-700">Email Notifications</span>
+                  <input type="checkbox" class="toggle-checkbox" checked>
+                </label>
+                <label class="flex items-center justify-between">
+                  <span class="text-sm text-gray-700">SMS Alerts</span>
+                  <input type="checkbox" class="toggle-checkbox">
+                </label>
+                <label class="flex items-center justify-between">
+                  <span class="text-sm text-gray-700">Sound Alerts</span>
+                  <input type="checkbox" class="toggle-checkbox" checked>
+                </label>
+              </div>
+              <button onclick="saveSettings()" class="w-full mt-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 text-sm">
+                Save Settings
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Notifications Area -->
+        <div class="lg:col-span-3">
+          <!-- Date Filter -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <span class="text-sm text-gray-700">Show:</span>
+                <select onchange="filterByDate(this.value)" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:border-teal-500 focus:outline-none">
+                  <option value="all">All time</option>
+                  <option value="today">Today</option>
+                  <option value="week">This week</option>
+                  <option value="month">This month</option>
+                </select>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-700">Sort by:</span>
+                <select onchange="sortNotifications(this.value)" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:border-teal-500 focus:outline-none">
+                  <option value="newest">Newest first</option>
+                  <option value="oldest">Oldest first</option>
+                  <option value="unread">Unread first</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Notifications List -->
+          <div id="notificationsList" class="space-y-3">
+            <!-- Today's Notifications -->
+            <div class="mb-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <i class="bi bi-calendar-day text-teal-600"></i>
+                Today
+              </h3>
+              
+              <!-- Notification 1 -->
+              <div class="notification-item unread bg-white rounded-xl shadow-sm border border-gray-200 p-5" data-type="order" data-date="today">
+                <div class="flex gap-4">
+                  <div class="notification-icon order">
+                    <i class="bi bi-truck text-white text-xl"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between mb-2">
+                      <div>
+                        <h4 class="font-semibold text-gray-900">Order Shipped!</h4>
+                        <div class="flex items-center gap-2 mt-1">
+                          <span class="notification-badge order"></span>
+                          <span class="text-sm text-gray-600">Order • Just now</span>
+                        </div>
+                      </div>
+                      <div class="notification-actions flex items-center gap-2">
+                        <button onclick="markAsRead(this)" class="p-1 text-gray-400 hover:text-teal-600">
+                          <i class="bi bi-check2"></i>
+                        </button>
+                        <button onclick="deleteNotification(this)" class="p-1 text-gray-400 hover:text-red-600">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <p class="text-gray-700 mb-3">
+                      Your order <strong class="text-teal-600">#TS-7842</strong> has been shipped via UPS. Tracking number: <strong>1Z999AA1234567890</strong>. Estimated delivery: Tomorrow by 2 PM.
+                    </p>
+                    <div class="flex items-center gap-4">
+                      <a href="account.html#orders" class="text-sm text-teal-600 font-medium hover:text-teal-700">
+                        Track Order <i class="bi bi-arrow-right ml-1"></i>
+                      </a>
+                      <span class="time-indicator">
+                        <i class="bi bi-clock"></i>
+                        <span>2 minutes ago</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Notification 2 -->
+              <div class="notification-item unread bg-white rounded-xl shadow-sm border border-gray-200 p-5" data-type="promo" data-date="today">
+                <div class="flex gap-4">
+                  <div class="notification-icon promo">
+                    <i class="bi bi-lightning-charge text-white text-xl"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between mb-2">
+                      <div>
+                        <h4 class="font-semibold text-gray-900">Flash Sale Live! ⚡</h4>
+                        <div class="flex items-center gap-2 mt-1">
+                          <span class="notification-badge promo"></span>
+                          <span class="text-sm text-gray-600">Promotion • 1 hour ago</span>
+                        </div>
+                      </div>
+                      <div class="notification-actions flex items-center gap-2">
+                        <button onclick="markAsRead(this)" class="p-1 text-gray-400 hover:text-teal-600">
+                          <i class="bi bi-check2"></i>
+                        </button>
+                        <button onclick="deleteNotification(this)" class="p-1 text-gray-400 hover:text-red-600">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <p class="text-gray-700 mb-3">
+                      Don't miss our 24-hour flash sale! Get <strong>60% OFF</strong> on selected headphones, smartwatches, and accessories. Limited stock available.
+                    </p>
+                    <div class="flex items-center gap-4">
+                      <a href="deals.html" class="px-4 py-2 bg-gradient-to-r from-red-500 to-orange-500 text-white text-sm font-medium rounded-lg hover:shadow-lg">
+                        Shop Now
+                      </a>
+                      <span class="time-indicator">
+                        <i class="bi bi-clock"></i>
+                        <span>1 hour ago</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Yesterday's Notifications -->
+            <div class="mb-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <i class="bi bi-calendar-minus text-blue-600"></i>
+                Yesterday
+              </h3>
+              
+              <!-- Notification 3 -->
+              <div class="notification-item bg-white rounded-xl shadow-sm border border-gray-200 p-5" data-type="order" data-date="yesterday">
+                <div class="flex gap-4">
+                  <div class="notification-icon order">
+                    <i class="bi bi-credit-card text-white text-xl"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between mb-2">
+                      <div>
+                        <h4 class="font-semibold text-gray-900">Payment Confirmed</h4>
+                        <div class="flex items-center gap-2 mt-1">
+                          <span class="notification-badge order"></span>
+                          <span class="text-sm text-gray-600">Order • Read</span>
+                        </div>
+                      </div>
+                      <div class="notification-actions flex items-center gap-2">
+                        <button onclick="deleteNotification(this)" class="p-1 text-gray-400 hover:text-red-600">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <p class="text-gray-700 mb-3">
+                      Payment for order <strong class="text-teal-600">#TS-7791</strong> has been successfully processed. Your order is now being prepared for shipment.
+                    </p>
+                    <div class="flex items-center gap-4">
+                      <span class="time-indicator">
+                        <i class="bi bi-clock"></i>
+                        <span>Yesterday, 3:45 PM</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Notification 4 -->
+              <div class="notification-item unread bg-white rounded-xl shadow-sm border border-gray-200 p-5" data-type="system" data-date="yesterday">
+                <div class="flex gap-4">
+                  <div class="notification-icon system">
+                    <i class="bi bi-cloud-arrow-up text-white text-xl"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between mb-2">
+                      <div>
+                        <h4 class="font-semibold text-gray-900">System Maintenance</h4>
+                        <div class="flex items-center gap-2 mt-1">
+                          <span class="notification-badge system"></span>
+                          <span class="text-sm text-gray-600">System Update • Unread</span>
+                        </div>
+                      </div>
+                      <div class="notification-actions flex items-center gap-2">
+                        <button onclick="markAsRead(this)" class="p-1 text-gray-400 hover:text-teal-600">
+                          <i class="bi bi-check2"></i>
+                        </button>
+                        <button onclick="deleteNotification(this)" class="p-1 text-gray-400 hover:text-red-600">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <p class="text-gray-700 mb-3">
+                      Scheduled maintenance on March 15, 2:00 AM - 4:00 AM UTC. TechStore will be temporarily unavailable. We apologize for any inconvenience.
+                    </p>
+                    <div class="flex items-center gap-4">
+                      <button onclick="dismissNotification(this)" class="text-sm text-gray-600 hover:text-gray-900">
+                        Dismiss
+                      </button>
+                      <span class="time-indicator">
+                        <i class="bi bi-clock"></i>
+                        <span>Yesterday, 1:30 PM</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- This Week's Notifications -->
+            <div class="mb-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <i class="bi bi-calendar-week text-purple-600"></i>
+                This Week
+              </h3>
+              
+              <!-- Notification 5 -->
+              <div class="notification-item bg-white rounded-xl shadow-sm border border-gray-200 p-5" data-type="promo" data-date="week">
+                <div class="flex gap-4">
+                  <div class="notification-icon promo">
+                    <i class="bi bi-gift text-white text-xl"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between mb-2">
+                      <div>
+                        <h4 class="font-semibold text-gray-900">Birthday Reward! 🎂</h4>
+                        <div class="flex items-center gap-2 mt-1">
+                          <span class="notification-badge promo"></span>
+                          <span class="text-sm text-gray-600">Promotion • Read</span>
+                        </div>
+                      </div>
+                      <div class="notification-actions flex items-center gap-2">
+                        <button onclick="deleteNotification(this)" class="p-1 text-gray-400 hover:text-red-600">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <p class="text-gray-700 mb-3">
+                      Happy Birthday! Here's a special <strong>$20 gift card</strong> just for you. Use code: <strong>BDAY2024</strong>. Valid for 30 days.
+                    </p>
+                    <div class="flex items-center gap-4">
+                      <a href="product.html" class="text-sm text-teal-600 font-medium hover:text-teal-700">
+                        Use Reward <i class="bi bi-arrow-right ml-1"></i>
+                      </a>
+                      <span class="time-indicator">
+                        <i class="bi bi-clock"></i>
+                        <span>3 days ago</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Notification 6 -->
+              <div class="notification-item unread bg-white rounded-xl shadow-sm border border-gray-200 p-5" data-type="security" data-date="week">
+                <div class="flex gap-4">
+                  <div class="notification-icon security">
+                    <i class="bi bi-shield-exclamation text-white text-xl"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between mb-2">
+                      <div>
+                        <h4 class="font-semibold text-gray-900">New Device Sign-in</h4>
+                        <div class="flex items-center gap-2 mt-1">
+                          <span class="notification-badge security"></span>
+                          <span class="text-sm text-gray-600">Security Alert • Unread</span>
+                        </div>
+                      </div>
+                      <div class="notification-actions flex items-center gap-2">
+                        <button onclick="markAsRead(this)" class="p-1 text-gray-400 hover:text-teal-600">
+                          <i class="bi bi-check2"></i>
+                        </button>
+                        <button onclick="deleteNotification(this)" class="p-1 text-gray-400 hover:text-red-600">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <p class="text-gray-700 mb-3">
+                      Your account was accessed from a new device (Chrome on Windows, San Francisco). If this wasn't you, please secure your account immediately.
+                    </p>
+                    <div class="flex items-center gap-4">
+                      <a href="account.html#settings" class="px-4 py-2 bg-amber-500 text-white text-sm font-medium rounded-lg hover:bg-amber-600">
+                        Review Activity
+                      </a>
+                      <span class="time-indicator">
+                        <i class="bi bi-clock"></i>
+                        <span>4 days ago</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Empty State (Hidden by default) -->
+          <div id="emptyState" class="hidden empty-state bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+            <div class="max-w-md mx-auto">
+              <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center">
+                <i class="bi bi-bell text-4xl text-gray-400"></i>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-900 mb-3">No notifications</h3>
+              <p class="text-gray-600 mb-8">
+                You're all caught up! When you have new notifications, they'll appear here.
+              </p>
+              <button onclick="loadSampleNotifications()" class="inline-block py-3 px-8 bg-gradient-to-r from-teal-600 to-cyan-500 text-white font-medium rounded-lg hover:shadow-lg transition-shadow">
+                Load Sample Notifications
+              </button>
+            </div>
+          </div>
+          
+          <!-- Load More -->
+          <div class="text-center mt-8">
+            <button onclick="loadMoreNotifications()" class="px-6 py-3 border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+              <i class="bi bi-arrow-clockwise mr-2"></i>
+              Load More Notifications
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white mt-20">
+    <div class="mx-auto max-w-7xl px-4 pt-12 pb-8 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+        <div class="space-y-6">
+          <a href="index.html" class="inline-flex items-center gap-3">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-teal-600 to-cyan-500">
+              <i class="bi bi-cpu-fill text-white text-xl"></i>
+            </div>
+            <div>
+              <span class="text-2xl font-bold">TechStore</span>
+              <div class="text-xs font-medium text-teal-400">Premium Technology</div>
+            </div>
+          </a>
+          <p class="text-gray-400 text-sm">
+            Stay informed with real-time updates about your orders and account.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold mb-6">Notification Types</h3>
+          <ul class="space-y-3">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Order Updates</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Promotional Offers</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Security Alerts</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">System Announcements</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-semibold mb-6">Quick Links</h3>
+          <ul class="space-y-3">
+            <li><a href="account.html" class="text-gray-400 hover:text-white transition-colors text-sm">Account Settings</a></li>
+            <li><a href="support.html" class="text-gray-400 hover:text-white transition-colors text-sm">Support Center</a></li>
+            <li><a href="livechat.html" class="text-gray-400 hover:text-white transition-colors text-sm">Live Chat</a></li>
+            <li><a href="deals.html" class="text-gray-400 hover:text-white transition-colors text-sm">Current Deals</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-semibold mb-6">Notification Settings</h3>
+          <ul class="space-y-3">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Manage Preferences</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Email Settings</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Push Notifications</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">SMS Settings</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-16 border-t border-gray-800 pt-8 text-center text-gray-400 text-sm">
+        © 2024 TechStore Notifications Center. You can manage your notification preferences in Account Settings.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    let notificationCount = 12;
+    let currentFilter = 'all';
+    let currentSort = 'newest';
+    
+    // Mark as read
+    function markAsRead(button) {
+      const notification = button.closest('.notification-item');
+      notification.classList.remove('unread');
+      
+      // Update count
+      notificationCount--;
+      updateNotificationCount();
+      
+      // Show success feedback
+      button.innerHTML = '<i class="bi bi-check2-all text-teal-600"></i>';
+      setTimeout(() => {
+        button.innerHTML = '<i class="bi bi-check2"></i>';
+      }, 1000);
+    }
+    
+    // Mark all as read
+    function markAllAsRead() {
+      document.querySelectorAll('.notification-item.unread').forEach(item => {
+        item.classList.remove('unread');
+      });
+      
+      notificationCount = 0;
+      updateNotificationCount();
+      
+      // Show toast notification
+      showToast('All notifications marked as read');
+    }
+    
+    // Delete notification
+    function deleteNotification(button) {
+      const notification = button.closest('.notification-item');
+      notification.style.opacity = '0';
+      notification.style.transform = 'translateX(100px)';
+      
+      setTimeout(() => {
+        notification.remove();
+        
+        // Check if unread
+        if (notification.classList.contains('unread')) {
+          notificationCount--;
+          updateNotificationCount();
+        }
+        
+        // Show empty state if no notifications
+        if (document.querySelectorAll('.notification-item').length === 0) {
+          document.getElementById('emptyState').classList.remove('hidden');
+        }
+      }, 300);
+    }
+    
+    // Dismiss notification
+    function dismissNotification(button) {
+      const notification = button.closest('.notification-item');
+      notification.style.opacity = '0';
+      notification.style.height = '0';
+      notification.style.padding = '0';
+      notification.style.margin = '0';
+      notification.style.overflow = 'hidden';
+      
+      setTimeout(() => {
+        notification.remove();
+        
+        if (document.querySelectorAll('.notification-item').length === 0) {
+          document.getElementById('emptyState').classList.remove('hidden');
+        }
+      }, 300);
+    }
+    
+    // Clear all notifications
+    function clearAllNotifications() {
+      if (!confirm('Are you sure you want to clear all notifications?')) return;
+      
+      const notifications = document.querySelectorAll('.notification-item');
+      notifications.forEach((notification, index) => {
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          notification.style.transform = 'translateX(100px)';
+          setTimeout(() => notification.remove(), 300);
+        }, index * 50);
+      });
+      
+      setTimeout(() => {
+        notificationCount = 0;
+        updateNotificationCount();
+        document.getElementById('emptyState').classList.remove('hidden');
+        showToast('All notifications cleared');
+      }, notifications.length * 50 + 300);
+    }
+    
+    // Filter notifications
+    function filterNotifications(type) {
+      currentFilter = type;
+      
+      // Update active filter button
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.classList.add('text-gray-700', 'hover:bg-gray-50');
+      });
+      event.target.classList.add('active');
+      event.target.classList.remove('text-gray-700', 'hover:bg-gray-50');
+      
+      // Show/hide notifications
+      document.querySelectorAll('.notification-item').forEach(item => {
+        if (type === 'all' || item.dataset.type === type) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+      
+      // Update empty state
+      const visibleNotifications = document.querySelectorAll('.notification-item[style*="display: flex"]');
+      document.getElementById('emptyState').classList.toggle('hidden', visibleNotifications.length > 0);
+    }
+    
+    // Filter by date
+    function filterByDate(range) {
+      document.querySelectorAll('.notification-item').forEach(item => {
+        if (range === 'all' || item.dataset.date === range) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+    
+    // Sort notifications
+    function sortNotifications(order) {
+      currentSort = order;
+      const container = document.getElementById('notificationsList');
+      const notifications = Array.from(container.querySelectorAll('.notification-item'));
+      
+      // Sort logic
+      notifications.sort((a, b) => {
+        if (order === 'newest') {
+          return b.dataset.timestamp - a.dataset.timestamp;
+        } else if (order === 'oldest') {
+          return a.dataset.timestamp - b.dataset.timestamp;
+        } else if (order === 'unread') {
+          const aUnread = a.classList.contains('unread');
+          const bUnread = b.classList.contains('unread');
+          return bUnread - aUnread;
+        }
+        return 0;
+      });
+      
+      // Reorder in DOM
+      notifications.forEach(notification => {
+        container.appendChild(notification);
+      });
+    }
+    
+    // Load more notifications
+    function loadMoreNotifications() {
+      // Simulate loading
+      const button = event.target;
+      button.innerHTML = '<i class="bi bi-hourglass-split mr-2"></i>Loading...';
+      button.disabled = true;
+      
+      // Simulate API delay
+      setTimeout(() => {
+        // Add sample notifications
+        const sampleNotifications = [
+          {
+            type: 'order',
+            title: 'Delivery Successful',
+            message: 'Your order #TS-7755 has been delivered. We hope you enjoy your purchase!',
+            time: '5 days ago',
+            icon: 'bi-check-circle'
+          },
+          {
+            type: 'promo',
+            title: 'Weekend Sale',
+            message: 'Enjoy 30% OFF on all laptop accessories this weekend only. Use code: WEEKEND30',
+            time: '1 week ago',
+            icon: 'bi-tag'
+          }
+        ];
+        
+        sampleNotifications.forEach(notification => {
+          addNotification(notification);
+        });
+        
+        button.innerHTML = '<i class="bi bi-arrow-clockwise mr-2"></i>Load More Notifications';
+        button.disabled = false;
+        showToast('Loaded more notifications');
+      }, 1000);
+    }
+    
+    // Add new notification
+    function addNotification(data) {
+      const container = document.getElementById('notificationsList');
+      const todaySection = container.querySelector('.mb-6:first-child');
+      
+      const notification = document.createElement('div');
+      notification.className = 'notification-item unread bg-white rounded-xl shadow-sm border border-gray-200 p-5';
+      notification.dataset.type = data.type;
+      notification.dataset.date = 'week';
+      notification.dataset.timestamp = Date.now();
+      
+      const iconClass = data.type === 'order' ? 'order' : 
+                       data.type === 'promo' ? 'promo' : 
+                       data.type === 'system' ? 'system' : 
+                       data.type === 'security' ? 'security' : 'social';
+      
+      notification.innerHTML = `
+        <div class="flex gap-4">
+          <div class="notification-icon ${iconClass}">
+            <i class="bi ${data.icon} text-white text-xl"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between mb-2">
+              <div>
+                <h4 class="font-semibold text-gray-900">${data.title}</h4>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="notification-badge ${iconClass}"></span>
+                  <span class="text-sm text-gray-600">${data.type.charAt(0).toUpperCase() + data.type.slice(1)} • Just now</span>
+                </div>
+              </div>
+              <div class="notification-actions flex items-center gap-2">
+                <button onclick="markAsRead(this)" class="p-1 text-gray-400 hover:text-teal-600">
+                  <i class="bi bi-check2"></i>
+                </button>
+                <button onclick="deleteNotification(this)" class="p-1 text-gray-400 hover:text-red-600">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+            <p class="text-gray-700 mb-3">${data.message}</p>
+            <div class="flex items-center gap-4">
+              <span class="time-indicator">
+                <i class="bi bi-clock"></i>
+                <span>${data.time}</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      todaySection.appendChild(notification);
+      notificationCount++;
+      updateNotificationCount();
+    }
+    
+    // Load sample notifications
+    function loadSampleNotifications() {
+      document.getElementById('emptyState').classList.add('hidden');
+      
+      const samples = [
+        {
+          type: 'order',
+          title: 'Order Confirmed',
+          message: 'Your order #TS-7890 has been confirmed and is being processed.',
+          time: 'Just now',
+          icon: 'bi-bag-check'
+        },
+        {
+          type: 'promo',
+          title: 'Limited Time Offer',
+          message: 'Get free shipping on all orders over $99. Offer ends Sunday.',
+          time: 'Just now',
+          icon: 'bi-truck'
+        },
+        {
+          type: 'system',
+          title: 'App Update Available',
+          message: 'A new version of the TechStore app is available with improved performance.',
+          time: 'Just now',
+          icon: 'bi-phone'
+        }
+      ];
+      
+      samples.forEach(sample => {
+        addNotification(sample);
+      });
+      
+      showToast('Sample notifications loaded');
+    }
+    
+    // Save settings
+    function saveSettings() {
+      const checkboxes = document.querySelectorAll('.toggle-checkbox');
+      const settings = {
+        push: checkboxes[0].checked,
+        email: checkboxes[1].checked,
+        sms: checkboxes[2].checked,
+        sound: checkboxes[3].checked
+      };
+      
+      // In real app, save to backend
+      localStorage.setItem('notificationSettings', JSON.stringify(settings));
+      showToast('Notification settings saved');
+    }
+    
+    // Update notification count
+    function updateNotificationCount() {
+      // Update header badge
+      const headerBadge = document.querySelector('.notification-count');
+      headerBadge.textContent = notificationCount;
+      headerBadge.style.display = notificationCount > 0 ? 'flex' : 'none';
+      
+      // Update sidebar counts
+      const typeCounts = {
+        order: document.querySelectorAll('.notification-item[data-type="order"].unread').length,
+        promo: document.querySelectorAll('.notification-item[data-type="promo"].unread').length,
+        system: document.querySelectorAll('.notification-item[data-type="system"].unread').length,
+        security: document.querySelectorAll('.notification-item[data-type="security"].unread').length
+      };
+      
+      // Update filter button counts
+      document.querySelectorAll('.filter-btn .notification-count').forEach(badge => {
+        const type = badge.closest('.filter-btn').onclick.toString().includes("'order'") ? 'order' :
+                    badge.closest('.filter-btn').onclick.toString().includes("'promo'") ? 'promo' :
+                    badge.closest('.filter-btn').onclick.toString().includes("'system'") ? 'system' :
+                    badge.closest('.filter-btn').onclick.toString().includes("'security'") ? 'security' : 'all';
+        
+        if (type === 'all') {
+          badge.textContent = notificationCount;
+          badge.style.display = notificationCount > 0 ? 'flex' : 'none';
+        } else {
+          const count = typeCounts[type] || 0;
+          badge.textContent = count;
+          badge.style.display = count > 0 ? 'flex' : 'none';
+        }
+      });
+    }
+    
+    // Show toast notification
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-6 right-6 bg-gray-900 text-white px-6 py-3 rounded-xl shadow-lg z-50 transform translate-y-full opacity-0 transition-all duration-300';
+      toast.innerHTML = `
+        <div class="flex items-center gap-3">
+          <i class="bi bi-check-circle text-green-400"></i>
+          <span class="font-medium">${message}</span>
+        </div>
+      `;
+      
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.classList.remove('translate-y-full', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+      }, 10);
+      
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-full', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      updateNotificationCount();
+      
+      // Load saved settings
+      const savedSettings = localStorage.getItem('notificationSettings');
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        const checkboxes = document.querySelectorAll('.toggle-checkbox');
+        checkboxes[0].checked = settings.push;
+        checkboxes[1].checked = settings.email;
+        checkboxes[2].checked = settings.sms;
+        checkboxes[3].checked = settings.sound;
+      }
+      
+      // Add timestamps for sorting
+      document.querySelectorAll('.notification-item').forEach((item, index) => {
+        item.dataset.timestamp = Date.now() - (index * 3600000);
+      });
+    });
+  </script>
+
+</body>
+</html>
